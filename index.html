@@ -227,38 +227,12 @@ footer{padding:.45rem 0;border-top:1px solid var(--border);display:flex;align-it
 </head>
 <body>
 
-<!-- ══ SCREEN 1: API KEY ══ -->
+<!-- ══ SCREEN 1: WELCOME (no key needed — proxy handles it) ══ -->
 <div class="overlay" id="screen-apikey">
-  <div class="apicard">
-    <div style="font-size:42px;text-align:center;margin-bottom:.5rem;">🤖</div>
-    <h2>WATT needs an API key</h2>
-    <p class="sub">WATT is powered by <strong>Claude AI</strong>. You need a free Anthropic API key — it's stored only in your browser and sent directly to Anthropic, never anywhere else.</p>
-    <div class="steps-box">
-      <div class="steps-title">HOW TO GET YOUR FREE KEY (takes 2 min)</div>
-      <div class="step-row"><span class="step-n">01</span><span>Go to <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com/settings/keys</a> and sign up free</span></div>
-      <div class="step-row"><span class="step-n">02</span><span>Click <strong>Create Key</strong> — name it "WATT"</span></div>
-      <div class="step-row"><span class="step-n">03</span><span>Copy the key (starts with <strong>sk-ant-</strong>) and paste it below</span></div>
-      <div class="step-row"><span class="step-n">04</span><span>Your key is saved in this browser — you only enter it once</span></div>
-    </div>
-    <div class="saved-bar" id="saved-bar" style="display:none;">
-      <span class="saved-txt">✓ API key saved in this browser</span>
-      <button class="clear-btn" id="clear-btn">Clear &amp; re-enter</button>
-    </div>
-    <div id="key-error" class="key-error"></div>
-    <div class="key-row" id="key-row">
-      <input class="key-input" id="key-input" type="text" placeholder="Paste sk-ant-api03-... here" autocomplete="off" spellcheck="false">
-      <button class="key-btn" id="key-btn">Connect →</button>
-    </div>
-    <div class="key-note">Free tier includes $5 credit — enough for many hours of lessons. Your key is never shared or stored on any server.</div>
-  </div>
-</div>
-
-<!-- ══ SCREEN 2: WELCOME ══ -->
-<div class="overlay" id="screen-welcome" style="display:none;">
   <div class="ocard">
     <div class="ri">🤖</div>
     <h2>Hi! I'm WATT!</h2>
-    <p>Your Workday T&A voice tutor — <strong>8 modules &amp; 79 lessons</strong> including a full dormakaba B-COMM integration module, step-by-step setup guide, and a brand-new <strong>Project Manager Implementation Guide</strong> with detailed task-by-task walkthroughs for your Workday analyst, IT team, and clock installers.</p>
+    <p>Your Workday T&A voice tutor — <strong>8 modules &amp; 79 lessons</strong> including a full dormakaba B-COMM integration module, step-by-step setup guide, and a complete <strong>Project Manager Implementation Guide</strong>.</p>
     <div class="mod-grid">
       <div class="mc">Foundations</div><div class="mc">Time Entry</div>
       <div class="mc">Absence</div><div class="mc">Manager</div>
@@ -266,8 +240,8 @@ footer{padding:.45rem 0;border-top:1px solid var(--border);display:flex;align-it
       <div class="mc setup">🟣 Setup &amp; Go-Live</div>
       <div class="mc" style="border-color:rgba(245,158,11,.4);color:#f59e0b;">🟡 PM Guide</div>
     </div>
-    <button class="obtn" id="start-btn">🔊 Start My Voice Lesson</button>
-    <div class="vhint">8 modules · 79 lessons · voice-first learning</div>
+    <button class="obtn" id="start-btn" onclick="startWATT()">🔊 Start My Voice Lesson</button>
+    <div class="vhint">8 modules · 79 lessons · voice-first · no login needed</div>
   </div>
 </div>
 
@@ -542,97 +516,19 @@ WBS 8.3 Project Closure February 15 to 21 assigned to PM and Vendor Team: Conduc
 /* ══ STATE ══ */
 let modIdx=0, lesIdx=0, loading=false, hist=[], done=new Set();
 let ttsOn=true, lastRaw='', mTmr=null, isRec=false, recog=null;
-let apiKey='';
 const synth=window.speechSynthesis;
 let voice=null;
 
-/* ══ KEY STORAGE ══ */
-const KEY_NAME='watt_anthropic_key';
-function getStoredKey(){try{return localStorage.getItem(KEY_NAME)||'';}catch(e){return '';}}
-function storeKey(k){try{localStorage.setItem(KEY_NAME,k);}catch(e){}}
-function deleteKey(){try{localStorage.removeItem(KEY_NAME);}catch(e){}}
-
-/* ══ API KEY SCREEN ══ */
-function showScreen(id){
-  ['screen-apikey','screen-welcome'].forEach(s=>{
-    const el=document.getElementById(s);
-    if(el) el.style.display = s===id ? 'flex' : 'none';
-  });
-}
-
-async function testAndSaveKey(key){
-  // Just validate the format — no test API call needed
-  // CORS and model restrictions make test calls unreliable from GitHub Pages
-  if(!key || key.trim().length < 20){
-    return {ok:false, msg:'Please paste your full API key.'};
-  }
-  const trimmed = key.trim();
-  if(!trimmed.startsWith('sk-ant-')){
-    return {ok:false, msg:'Key should start with sk-ant- — check you copied the full key.'};
-  }
-  if(trimmed.length < 50){
-    return {ok:false, msg:'Key looks too short — make sure you copied the complete key.'};
-  }
-  // Key looks valid — save it and proceed. Any real errors will show in chat.
-  storeKey(trimmed);
-  apiKey=trimmed;
-  return {ok:true};
+/* ══ START — called by welcome screen button ══ */
+function startWATT(){
+  document.getElementById('screen-apikey').style.display='none';
+  const wu=new SpeechSynthesisUtterance(' ');wu.volume=0;synth.speak(wu);
+  pickVoice();
+  setTimeout(()=>{pickVoice();startLesson();},400);
 }
 
 function initKeyScreen(){
-  const stored = getStoredKey();
-  const errorEl  = document.getElementById('key-error');
-  const keyRow   = document.getElementById('key-row');
-  const savedBar = document.getElementById('saved-bar');
-  const keyInput = document.getElementById('key-input');
-  const keyBtn   = document.getElementById('key-btn');
-  const clearBtn = document.getElementById('clear-btn');
-
-  function showSaved(){
-    savedBar.style.display='flex';
-    keyRow.style.display='none';
-    keyBtn.textContent='Start WATT →';
-  }
-  function showInput(){
-    savedBar.style.display='none';
-    keyRow.style.display='flex';
-    keyBtn.textContent='Connect →';
-  }
-
-  if(stored){
-    apiKey=stored;
-    showSaved();
-  } else {
-    showInput();
-  }
-
-  clearBtn.addEventListener('click',()=>{
-    deleteKey(); apiKey='';
-    errorEl.textContent='';
-    keyInput.value='';
-    showInput();
-    keyInput.focus();
-  });
-
-  async function handleConnect(){
-    errorEl.textContent='';
-    // Always read from input if visible, otherwise use stored key
-    const inputVal = keyInput.value.trim();
-    const key = (keyRow.style.display==='none' && apiKey) ? apiKey : inputVal;
-    if(!key){errorEl.textContent='Please paste your API key into the box above.';keyInput.focus();return;}
-    // Clear any previously bad stored key before saving new one
-    deleteKey(); apiKey='';
-    const result = await testAndSaveKey(key);
-    if(result.ok){
-      showScreen('screen-welcome');
-    } else {
-      errorEl.textContent=result.msg||'Something went wrong.';
-      keyBtn.textContent='Connect →';
-    }
-  }
-
-  keyBtn.addEventListener('click', handleConnect);
-  keyInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();handleConnect();}});
+  // Nothing needed — proxy handles auth, no key screen required
 }
 
 /* ══ VOICE PICKER ══ */
@@ -926,22 +822,19 @@ function addTyping(){
 function remTyping(){const t=document.getElementById('ti');if(t)t.remove();}
 
 /* ══ CLAUDE API CALL ══ */
+const PROXY='https://watt-proxy.arun-ramanna.workers.dev';
+
 async function callClaude(prompt){
   const type=curType();
-  const ctx=`[Lesson: Module ${modIdx+1} "${MODS[modIdx].title}" -> "${curL().t}". ${type==='dk'?'Use dormakaba 98 00 hardware and B-COMM Workday knowledge.':''}${type==='setup'?'Use the 10-phase setup guide knowledge.':''}${type==='pm'?'Use the PM implementation guide knowledge for WBS '+curL().wbs+' in the '+curL().phase+' phase. Assigned to: '+curL().who+'. Dates: '+curL().dates+'. Focus on what each role — Workday analyst, IT department, clock installer, and project manager — must specifically do for this task. Be practical and detailed.':''} Teach in warm California voice. Natural sentences only, no symbols, under 90 words.]`;
+  const ctx=`[Lesson: Module ${modIdx+1} "${MODS[modIdx].title}" -> "${curL().t}". ${type==='dk'?'Use dormakaba 98 00 hardware and B-COMM Workday knowledge.':''}${type==='setup'?'Use the 10-phase setup guide knowledge.':''}${type==='pm'?'Use the PM implementation guide knowledge for WBS '+curL().wbs+' in the '+curL().phase+' phase. Assigned to: '+curL().who+'. Dates: '+curL().dates+'. Focus on what each role must specifically do. Be practical and detailed.':''} Teach in warm California voice. Natural sentences only, no symbols, under 90 words.]`;
   const msgs=[...hist,{role:'user',content:prompt+'\n\n'+ctx}];
-  const resp=await fetch('https://api.anthropic.com/v1/messages',{
+  const resp=await fetch(PROXY,{
     method:'POST',
-    headers:{
-      'Content-Type':'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version':'2023-06-01',
-      'anthropic-dangerous-allow-cors':'true'
-    },
+    headers:{'Content-Type':'application/json'},
     body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:300,system:SYS,messages:msgs})
   });
   if(!resp.ok){
-    let msg='API error '+resp.status;
+    let msg='Error '+resp.status+' — check that your Cloudflare Worker is running at '+PROXY;
     try{const d=await resp.json();msg=d.error?.message||msg;}catch(e){}
     throw new Error(msg);
   }
@@ -1024,19 +917,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     else{try{recog.start();}catch(e2){recog=initRec();try{recog.start();}catch(e3){}}}
   };
 
-  // Start button on welcome screen
-  document.getElementById('start-btn').onclick=()=>{
-    showScreen(null); // hide all overlays
-    ['screen-apikey','screen-welcome'].forEach(id=>{
-      const el=document.getElementById(id);if(el)el.style.display='none';
-    });
-    // Unlock audio
-    const wu=new SpeechSynthesisUtterance(' ');wu.volume=0;synth.speak(wu);
-    pickVoice();
-    setTimeout(()=>{pickVoice();startLesson();},400);
-  };
-
-  // Boot sequence
+  // Boot
   [100,500,1200].forEach(d=>setTimeout(pickVoice,d));
   initKeyScreen();
 });
