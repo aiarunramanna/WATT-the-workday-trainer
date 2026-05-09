@@ -1,6 +1,5 @@
-
 <!DOCTYPE html>
-<!-- WATT Voice Trainer | Version 2.1 | Updated: 2026-05-09 | Workday AI Training Tutor -->
+<!-- WATT Voice Trainer | Version 2.2 | Updated: 2026-05-09 | Workday AI Training Tutor -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -238,7 +237,7 @@ footer{padding:.45rem 0;border-top:1px solid var(--border);display:flex;align-it
       Workday AI Training Tutor
     </p>
     <div style="display:inline-block;font-family:'Space Mono',monospace;font-size:9px;padding:2px 10px;border-radius:99px;border:1px solid var(--border);color:var(--muted);margin-bottom:.75rem;">
-      v2.1 · 2026-05-09
+      v2.2 · 2026-05-09
     </div>
     <p>Your Workday T&A voice tutor — <strong>8 modules &amp; 79 lessons</strong> including a full dormakaba B-COMM integration module, step-by-step setup guide, and a complete <strong>Project Manager Implementation Guide</strong>.</p>
     <div class="mod-grid">
@@ -248,7 +247,7 @@ footer{padding:.45rem 0;border-top:1px solid var(--border);display:flex;align-it
       <div class="mc setup">🟣 Setup &amp; Go-Live</div>
       <div class="mc" style="border-color:rgba(245,158,11,.4);color:#f59e0b;">🟡 PM Guide</div>
     </div>
-    <button class="obtn" id="start-btn" onclick="startWATT()">🔊 Start My Voice Lesson</button>
+    <button class="obtn" id="start-btn" onclick="this.textContent='Starting...';this.disabled=true;startWATT();">🔊 Start My Voice Lesson</button>
     <div class="vhint">8 modules · 79 lessons · voice-first · no login needed</div>
   </div>
 </div>
@@ -529,11 +528,22 @@ let voice=null;
 
 /* ══ START — global so inline onclick can reach it ══ */
 function startWATT(){
+  // Hide the welcome overlay
   const s=document.getElementById('screen-apikey');
-  if(s) s.style.display='none';
-  const wu=new SpeechSynthesisUtterance(' ');wu.volume=0;synth.speak(wu);
-  pickVoice();
-  setTimeout(()=>{pickVoice();startLesson();},400);
+  if(s){s.style.display='none';s.style.visibility='hidden';}
+  // Unlock audio context (required by browsers before any sound)
+  try{const wu=new SpeechSynthesisUtterance(' ');wu.volume=0;synth.speak(wu);}catch(e){}
+  // Wait for DOM to be fully ready before starting lesson
+  function launch(){
+    try{pickVoice();}catch(e){}
+    try{renderPills();updateFoot();}catch(e){}
+    try{sendMsg('__auto__');}catch(e){
+      // If sendMsg fails, retry after a short delay
+      setTimeout(()=>{try{sendMsg('__auto__');}catch(e2){}},500);
+    }
+  }
+  // Give browser 600ms to finish all DOMContentLoaded wiring
+  setTimeout(launch, 600);
 }
 
 function initKeyScreen(){
@@ -879,7 +889,14 @@ async function sendMsg(text){
 }
 
 /* ══ NAVIGATION ══ */
-function startLesson(){hist=[];document.getElementById('chat').innerHTML='';renderPills();updateFoot();sendMsg('__auto__');}
+function startLesson(){
+  hist=[];
+  const chat=document.getElementById('chat');
+  if(chat) chat.innerHTML='';
+  renderPills();
+  updateFoot();
+  sendMsg('__auto__');
+}
 function nextLesson(){stopSpeak();const m=MODS[modIdx];if(lesIdx<m.lessons.length-1)lesIdx++;else if(modIdx<MODS.length-1){modIdx++;lesIdx=0;}startLesson();}
 function prevLesson(){stopSpeak();if(lesIdx>0)lesIdx--;else if(modIdx>0){modIdx--;lesIdx=MODS[modIdx].lessons.length-1;}startLesson();}
 
