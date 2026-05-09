@@ -246,7 +246,7 @@ footer{padding:.45rem 0;border-top:1px solid var(--border);display:flex;align-it
     </div>
     <div id="key-error" class="key-error"></div>
     <div class="key-row" id="key-row">
-      <input class="key-input" id="key-input" type="password" placeholder="Paste your sk-ant-... key here" autocomplete="off" spellcheck="false">
+      <input class="key-input" id="key-input" type="text" placeholder="Paste sk-ant-api03-... here" autocomplete="off" spellcheck="false">
       <button class="key-btn" id="key-btn">Connect →</button>
     </div>
     <div class="key-note">Free tier includes $5 credit — enough for many hours of lessons. Your key is never shared or stored on any server.</div>
@@ -561,47 +561,22 @@ function showScreen(id){
 }
 
 async function testAndSaveKey(key){
-  // Validate format first
-  if(!key || !key.startsWith('sk-ant-')){
-    return {ok:false, msg:'Key should start with sk-ant- — check you copied it fully.'};
+  // Just validate the format — no test API call needed
+  // CORS and model restrictions make test calls unreliable from GitHub Pages
+  if(!key || key.trim().length < 20){
+    return {ok:false, msg:'Please paste your full API key.'};
   }
-  // Test with minimal call
-  try{
-    const resp = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'x-api-key': key,
-        'anthropic-version':'2023-06-01',
-        'anthropic-dangerous-allow-cors':'true'
-      },
-      body: JSON.stringify({
-        model:'claude-haiku-4-5-20251001',
-        max_tokens:5,
-        messages:[{role:'user',content:'hi'}]
-      })
-    });
-    if(resp.status===200 || resp.status===400){
-      // 200 = valid, 400 can mean valid key but bad request — both mean key accepted
-      storeKey(key);
-      apiKey=key;
-      return {ok:true};
-    }
-    if(resp.status===401) return {ok:false, msg:'Invalid API key. Double-check you copied the full key.'};
-    if(resp.status===429) return {ok:false, msg:'Rate limit hit. Wait a moment and try again.'};
-    // Other errors — key might still be valid, proceed anyway
-    storeKey(key);
-    apiKey=key;
-    return {ok:true};
-  }catch(e){
-    // Network / CORS error — if key looks valid, accept it and let real calls surface errors
-    if(key.length > 40){
-      storeKey(key);
-      apiKey=key;
-      return {ok:true};
-    }
-    return {ok:false, msg:'Network error. Check your internet connection.'};
+  const trimmed = key.trim();
+  if(!trimmed.startsWith('sk-ant-')){
+    return {ok:false, msg:'Key should start with sk-ant- — check you copied the full key.'};
   }
+  if(trimmed.length < 50){
+    return {ok:false, msg:'Key looks too short — make sure you copied the complete key.'};
+  }
+  // Key looks valid — save it and proceed. Any real errors will show in chat.
+  storeKey(trimmed);
+  apiKey=trimmed;
+  return {ok:true};
 }
 
 function initKeyScreen(){
@@ -627,7 +602,6 @@ function initKeyScreen(){
   if(stored){
     apiKey=stored;
     showSaved();
-    // Re-attach btn click for the "Start WATT" button case
   } else {
     showInput();
   }
@@ -642,17 +616,18 @@ function initKeyScreen(){
 
   async function handleConnect(){
     errorEl.textContent='';
-    const key = stored && apiKey ? apiKey : keyInput.value.trim();
-    if(!key){errorEl.textContent='Please paste your API key above.';return;}
-    keyBtn.disabled=true;
-    keyBtn.textContent='Checking...';
+    // Always read from input if visible, otherwise use stored key
+    const inputVal = keyInput.value.trim();
+    const key = (keyRow.style.display==='none' && apiKey) ? apiKey : inputVal;
+    if(!key){errorEl.textContent='Please paste your API key into the box above.';keyInput.focus();return;}
+    // Clear any previously bad stored key before saving new one
+    deleteKey(); apiKey='';
     const result = await testAndSaveKey(key);
-    keyBtn.disabled=false;
     if(result.ok){
       showScreen('screen-welcome');
     } else {
       errorEl.textContent=result.msg||'Something went wrong.';
-      keyBtn.textContent = stored ? 'Start WATT →' : 'Connect →';
+      keyBtn.textContent='Connect →';
     }
   }
 
