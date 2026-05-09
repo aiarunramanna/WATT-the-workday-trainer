@@ -13,11 +13,54 @@
   --warn:#f59e0b;--danger:#ef4444;--dk:#e84042;--setup:#7c3aed;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
 body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,212,255,.025)1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.025)1px,transparent 1px);background-size:44px 44px;pointer-events:none;z-index:0;}
-body::after{content:'';position:fixed;top:-220px;left:50%;transform:translateX(-50%);width:700px;height:440px;background:radial-gradient(ellipse,rgba(0,212,255,.06)0%,transparent 70%);pointer-events:none;z-index:0;}
+
+/* ── OVERLAY SYSTEM ── */
+.overlay{position:fixed;inset:0;background:rgba(6,9,15,.96);z-index:200;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);padding:1rem;}
+.ocard{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:2rem 2.25rem;text-align:center;max-width:430px;width:100%;}
+.ocard .ri{font-size:46px;margin-bottom:.6rem;}
+.ocard h2{font-family:'Space Mono',monospace;color:var(--accent);font-size:16px;margin-bottom:.4rem;letter-spacing:.06em;}
+.ocard p{color:var(--dim);font-size:12.5px;line-height:1.65;margin-bottom:1rem;}
+.ocard p strong{color:var(--text);}
+.mod-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:1rem;}
+.mc{font-size:9px;font-family:'Space Mono',monospace;padding:4px 5px;border-radius:6px;border:1px solid var(--border);color:var(--dim);text-align:center;line-height:1.4;}
+.mc.dk{border-color:rgba(232,64,66,.4);color:var(--dk);}
+.mc.setup{border-color:rgba(124,58,237,.4);color:var(--setup);}
+.obtn{font-family:'Space Mono',monospace;font-size:12px;padding:11px 24px;border-radius:10px;border:1px solid var(--accent);background:rgba(0,212,255,.12);color:var(--accent);cursor:pointer;transition:all .2s;letter-spacing:.06em;}
+.obtn:hover{background:rgba(0,212,255,.22);}
+.vhint{margin-top:.6rem;font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;}
+
+/* API KEY CARD */
+.apicard{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:1.75rem 2rem;max-width:480px;width:100%;}
+.apicard h2{font-family:'Space Mono',monospace;color:var(--accent);font-size:15px;margin-bottom:.35rem;letter-spacing:.06em;text-align:center;}
+.apicard .sub{text-align:center;color:var(--dim);font-size:12px;margin-bottom:1rem;line-height:1.55;}
+.apicard .sub strong{color:var(--text);}
+.steps-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.75rem 1rem;margin-bottom:.85rem;}
+.steps-title{font-family:'Space Mono',monospace;font-size:9px;color:var(--accent);letter-spacing:.06em;margin-bottom:.5rem;}
+.step-row{display:flex;gap:8px;align-items:flex-start;margin-bottom:.35rem;font-size:11.5px;color:var(--dim);line-height:1.5;}
+.step-row:last-child{margin-bottom:0;}
+.step-n{font-family:'Space Mono',monospace;font-size:9px;color:var(--accent);background:rgba(0,212,255,.1);border-radius:4px;padding:1px 5px;flex-shrink:0;margin-top:2px;}
+.step-row a{color:var(--accent);text-decoration:none;}
+.step-row a:hover{text-decoration:underline;}
+.key-row{display:flex;gap:8px;margin-bottom:.5rem;}
+.key-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:9px 12px;color:var(--text);font-family:'Space Mono',monospace;font-size:11px;outline:none;transition:border-color .2s;letter-spacing:.03em;}
+.key-input:focus{border-color:var(--accent);}
+.key-input::placeholder{color:var(--muted);font-family:'DM Sans',sans-serif;font-size:11.5px;letter-spacing:0;}
+.key-btn{padding:9px 16px;border-radius:9px;border:1px solid var(--accent);background:rgba(0,212,255,.12);color:var(--accent);font-family:'Space Mono',monospace;font-size:11px;cursor:pointer;white-space:nowrap;transition:all .2s;}
+.key-btn:hover{background:rgba(0,212,255,.22);}
+.key-btn:disabled{opacity:.4;cursor:not-allowed;}
+.key-error{font-family:'Space Mono',monospace;font-size:10px;color:var(--danger);min-height:15px;margin-bottom:.4rem;text-align:center;}
+.saved-bar{display:flex;align-items:center;justify-content:space-between;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:8px;padding:6px 10px;margin-bottom:.6rem;}
+.saved-txt{font-family:'Space Mono',monospace;font-size:10px;color:var(--accent3);}
+.clear-btn{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);background:none;border:1px solid var(--border);border-radius:5px;padding:2px 8px;cursor:pointer;}
+.clear-btn:hover{color:var(--danger);border-color:var(--danger);}
+.key-note{font-size:10px;color:var(--muted);text-align:center;line-height:1.5;}
+
+/* ── MAIN APP ── */
 .app{position:relative;z-index:1;display:grid;grid-template-rows:auto 1fr auto;height:100vh;max-width:980px;margin:0 auto;width:100%;padding:0 1.25rem;}
-header{display:flex;align-items:center;justify-content:space-between;padding:.65rem 0;border-bottom:1px solid var(--border);gap:8px;flex-shrink:0;}
+header{display:flex;align-items:center;justify-content:space-between;padding:.6rem 0;border-bottom:1px solid var(--border);gap:8px;flex-shrink:0;}
 .logo{font-family:'Space Mono',monospace;font-size:12px;color:var(--accent);letter-spacing:.15em;white-space:nowrap;}
 .logo span{color:var(--muted);}
 .pills{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;}
@@ -30,12 +73,15 @@ header{display:flex;align-items:center;justify-content:space-between;padding:.65
 .pill.setup-pill{border-color:var(--setup);color:var(--setup);}
 .pill.setup-pill.active{background:rgba(124,58,237,.1);}
 .hdr-r{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);white-space:nowrap;}
-.stage{display:grid;grid-template-columns:230px 1fr;gap:1.25rem;padding:1rem 0;overflow:hidden;min-height:0;}
-.robot-panel{display:flex;flex-direction:column;align-items:center;gap:.55rem;min-height:0;overflow:hidden;}
-.rscene{position:relative;width:170px;height:195px;flex-shrink:0;}
-@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+
+.stage{display:grid;grid-template-columns:225px 1fr;gap:1.25rem;padding:.85rem 0;overflow:hidden;min-height:0;}
+
+/* ROBOT */
+.robot-panel{display:flex;flex-direction:column;align-items:center;gap:.5rem;min-height:0;overflow:hidden;}
+.rscene{position:relative;width:165px;height:190px;flex-shrink:0;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-9px);}}
 .rscene{animation:float 4s ease-in-out infinite;}
-.rsvg{width:170px;height:195px;filter:drop-shadow(0 0 22px rgba(0,212,255,.28));}
+.rsvg{width:165px;height:190px;filter:drop-shadow(0 0 20px rgba(0,212,255,.25));}
 @keyframes blink{0%,87%,100%{transform:scaleY(1);}93%{transform:scaleY(.07);}}
 .eye-l{animation:blink 4.8s ease-in-out infinite;transform-origin:67px 80px;}
 .eye-r{animation:blink 4.8s ease-in-out infinite .2s;transform-origin:111px 80px;}
@@ -47,36 +93,41 @@ header{display:flex;align-items:center;justify-content:space-between;padding:.65
 .rscene.speaking .sring:nth-child(2){animation:rout 1.8s ease-out infinite .6s;}
 .rscene.speaking .sring:nth-child(3){animation:rout 1.8s ease-out infinite 1.2s;}
 @keyframes tspin{from{transform:rotate(0);}to{transform:rotate(360deg);}}
-.nameplate{font-family:'Space Mono',monospace;font-size:15px;font-weight:700;color:var(--accent);letter-spacing:.1em;text-align:center;}
+
+.nameplate{font-family:'Space Mono',monospace;font-size:14px;font-weight:700;color:var(--accent);letter-spacing:.1em;text-align:center;}
 .nameplate small{display:block;font-size:9px;color:var(--muted);letter-spacing:.1em;margin-top:1px;}
-.status-pill{display:flex;align-items:center;gap:5px;font-family:'Space Mono',monospace;font-size:10px;padding:4px 11px;border-radius:99px;border:1px solid var(--border);background:var(--surface);}
+.status-pill{display:flex;align-items:center;gap:5px;font-family:'Space Mono',monospace;font-size:10px;padding:3px 10px;border-radius:99px;border:1px solid var(--border);background:var(--surface);}
 .sdot{width:7px;height:7px;border-radius:50%;}
 .sdot.ready{background:var(--accent3);animation:pglow 1.5s ease-in-out infinite;}
 .sdot.thinking{background:var(--warn);animation:pglow .6s ease-in-out infinite;}
 .sdot.speaking{background:var(--accent);animation:pglow .4s ease-in-out infinite;}
 .sdot.idle{background:var(--muted);}
-.voice-panel{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.6rem .75rem;display:flex;flex-direction:column;gap:.45rem;}
-.vrow{display:flex;align-items:center;gap:7px;}
-.vlabel{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);min-width:36px;}
-.vbtns{display:flex;gap:5px;}
-.vb{width:30px;height:30px;border-radius:7px;border:1px solid var(--border);background:var(--surface2);color:var(--dim);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+
+.voice-panel{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.55rem .7rem;display:flex;flex-direction:column;gap:.4rem;}
+.vrow{display:flex;align-items:center;gap:6px;}
+.vlabel{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);min-width:34px;}
+.vbtns{display:flex;gap:4px;}
+.vb{width:28px;height:28px;border-radius:7px;border:1px solid var(--border);background:var(--surface2);color:var(--dim);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
 .vb:hover{border-color:var(--accent);color:var(--accent);}
 .vb.on{border-color:var(--accent);color:var(--accent);background:rgba(0,212,255,.12);}
 input[type=range]{flex:1;height:3px;accent-color:var(--accent);cursor:pointer;}
-.rval{font-family:'Space Mono',monospace;font-size:9px;color:var(--dim);min-width:30px;text-align:right;}
-.vname{font-family:'Space Mono',monospace;font-size:9px;color:var(--accent3);text-align:center;padding:1px 0;letter-spacing:.03em;}
-.qa-sec{width:100%;display:flex;flex-direction:column;gap:4px;flex:1;min-height:0;overflow-y:auto;}
-.qa-title{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.08em;}
-.qa-btn{font-family:'DM Sans',sans-serif;font-size:11px;padding:5px 9px;border-radius:7px;border:1px solid var(--border);background:var(--surface);color:var(--dim);cursor:pointer;text-align:left;transition:all .2s;line-height:1.35;}
+.rval{font-family:'Space Mono',monospace;font-size:9px;color:var(--dim);min-width:28px;text-align:right;}
+.vname{font-family:'Space Mono',monospace;font-size:9px;color:var(--accent3);text-align:center;letter-spacing:.03em;}
+
+.qa-sec{width:100%;display:flex;flex-direction:column;gap:3px;flex:1;min-height:0;overflow-y:auto;}
+.qa-title{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.08em;margin-bottom:1px;}
+.qa-btn{font-family:'DM Sans',sans-serif;font-size:11px;padding:5px 8px;border-radius:7px;border:1px solid var(--border);background:var(--surface);color:var(--dim);cursor:pointer;text-align:left;transition:all .2s;line-height:1.3;}
 .qa-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(0,212,255,.04);}
-.qa-btn.dk{border-color:rgba(232,64,66,.3);color:rgba(232,64,66,.8);}
+.qa-btn.dk{border-color:rgba(232,64,66,.25);color:rgba(232,64,66,.75);}
 .qa-btn.dk:hover{border-color:var(--dk);color:var(--dk);background:rgba(232,64,66,.05);}
-.qa-btn.setup{border-color:rgba(124,58,237,.3);color:rgba(124,58,237,.8);}
+.qa-btn.setup{border-color:rgba(124,58,237,.25);color:rgba(124,58,237,.8);}
 .qa-btn.setup:hover{border-color:var(--setup);color:var(--setup);background:rgba(124,58,237,.05);}
+
+/* CHAT */
 .chat-panel{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;min-height:0;}
-.chat-top{padding:.55rem .9rem;border-bottom:1px solid var(--border);font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);display:flex;align-items:center;gap:7px;flex-shrink:0;}
+.chat-top{padding:.5rem .85rem;border-bottom:1px solid var(--border);font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);display:flex;align-items:center;gap:6px;flex-shrink:0;}
 .hdot{width:6px;height:6px;border-radius:50%;}
-.wavebar{display:flex;align-items:center;gap:2px;height:16px;margin-left:auto;}
+.wavebar{display:flex;align-items:center;gap:2px;height:14px;margin-left:auto;}
 .wbar{width:3px;border-radius:2px;background:var(--accent);transform:scaleY(.2);}
 @keyframes wa{0%,100%{transform:scaleY(.2);}50%{transform:scaleY(1);}}
 @keyframes wb{0%,100%{transform:scaleY(.5);}50%{transform:scaleY(.15);}}
@@ -86,110 +137,121 @@ input[type=range]{flex:1;height:3px;accent-color:var(--accent);cursor:pointer;}
 .waveon .wbar:nth-child(3){animation:wa .5s ease-in-out infinite .2s;}
 .waveon .wbar:nth-child(4){animation:wc .5s ease-in-out infinite .05s;}
 .waveon .wbar:nth-child(5){animation:wb .5s ease-in-out infinite .15s;}
-.chat-msgs{flex:1;overflow-y:auto;padding:.8rem;display:flex;flex-direction:column;gap:.65rem;scroll-behavior:smooth;min-height:0;}
+
+.chat-msgs{flex:1;overflow-y:auto;padding:.75rem;display:flex;flex-direction:column;gap:.6rem;scroll-behavior:smooth;min-height:0;}
 .chat-msgs::-webkit-scrollbar{width:3px;}
 .chat-msgs::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
-.msg{display:flex;gap:8px;animation:mi .28s ease-out;}
-@keyframes mi{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.msg{display:flex;gap:7px;animation:mi .25s ease-out;}
+@keyframes mi{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
 .msg.user{flex-direction:row-reverse;}
-.mav{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;font-family:'Space Mono',monospace;font-weight:700;}
+.mav{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;flex-shrink:0;font-family:'Space Mono',monospace;font-weight:700;}
 .mav.w{background:rgba(0,212,255,.14);border:1px solid rgba(0,212,255,.28);color:var(--accent);}
 .mav.u{background:rgba(124,58,237,.14);border:1px solid rgba(124,58,237,.28);color:var(--accent2);}
-.bubble{max-width:82%;padding:.5rem .75rem;border-radius:10px;font-size:13px;line-height:1.65;}
+.bubble{max-width:83%;padding:.45rem .7rem;border-radius:10px;font-size:12.5px;line-height:1.65;}
 .msg.watt .bubble{background:var(--surface2);border:1px solid var(--border);border-top-left-radius:3px;}
 .msg.user .bubble{background:rgba(124,58,237,.18);border:1px solid rgba(124,58,237,.28);border-top-right-radius:3px;}
 .msg.watt.dk-msg .bubble{border-color:rgba(232,64,66,.25);background:rgba(232,64,66,.04);}
-.msg.watt.setup-msg .bubble{border-color:rgba(124,58,237,.3);background:rgba(124,58,237,.05);}
-.mod-badge{display:inline-flex;align-items:center;gap:4px;font-family:'Space Mono',monospace;font-size:9px;padding:2px 7px;border-radius:4px;margin-bottom:5px;}
+.msg.watt.setup-msg .bubble{border-color:rgba(124,58,237,.28);background:rgba(124,58,237,.04);}
+.mod-badge{display:inline-flex;align-items:center;gap:4px;font-family:'Space Mono',monospace;font-size:9px;padding:2px 6px;border-radius:4px;margin-bottom:4px;}
 .mod-badge.dk{border:1px solid var(--dk);color:var(--dk);background:rgba(232,64,66,.08);}
 .mod-badge.setup{border:1px solid var(--setup);color:var(--setup);background:rgba(124,58,237,.08);}
-.rbtn{display:inline-flex;align-items:center;gap:3px;margin-top:5px;font-size:10px;font-family:'Space Mono',monospace;color:var(--muted);background:none;border:1px solid var(--border);border-radius:5px;padding:2px 7px;cursor:pointer;transition:all .2s;}
+.rbtn{display:inline-flex;align-items:center;gap:3px;margin-top:4px;font-size:10px;font-family:'Space Mono',monospace;color:var(--muted);background:none;border:1px solid var(--border);border-radius:5px;padding:2px 7px;cursor:pointer;transition:all .2s;}
 .rbtn:hover{color:var(--accent);border-color:var(--accent);}
-.typing-b{display:flex;gap:4px;padding:7px 11px;align-items:center;}
+.typing-b{display:flex;gap:4px;padding:6px 10px;align-items:center;}
 .typing-b span{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:tb 1.2s ease-in-out infinite;}
 .typing-b span:nth-child(2){animation-delay:.2s;}
 .typing-b span:nth-child(3){animation-delay:.4s;}
 @keyframes tb{0%,60%,100%{transform:translateY(0);opacity:.35;}30%{transform:translateY(-5px);opacity:1;}}
-/* Phase steps card */
-.phase-card{margin-top:8px;border:1px solid rgba(124,58,237,.2);border-radius:9px;overflow:hidden;}
-.phase-card-hdr{background:rgba(124,58,237,.1);padding:5px 10px;font-family:'Space Mono',monospace;font-size:9px;color:var(--setup);letter-spacing:.05em;display:flex;align-items:center;gap:6px;}
-.phase-steps{display:flex;flex-direction:column;gap:0;}
-.phase-step{display:flex;align-items:flex-start;gap:8px;padding:6px 10px;border-top:1px solid rgba(124,58,237,.1);font-size:11px;color:var(--dim);line-height:1.4;}
+
+/* Phase cards */
+.phase-card{margin-top:7px;border:1px solid rgba(124,58,237,.2);border-radius:9px;overflow:hidden;}
+.phase-card-hdr{background:rgba(124,58,237,.1);padding:4px 9px;font-family:'Space Mono',monospace;font-size:9px;color:var(--setup);letter-spacing:.04em;display:flex;align-items:center;gap:5px;}
+.phase-steps{display:flex;flex-direction:column;}
+.phase-step{display:flex;align-items:flex-start;gap:7px;padding:5px 9px;border-top:1px solid rgba(124,58,237,.1);font-size:11px;color:var(--dim);line-height:1.4;}
 .phase-step-num{font-family:'Space Mono',monospace;font-size:9px;color:var(--setup);background:rgba(124,58,237,.12);border-radius:4px;padding:1px 5px;flex-shrink:0;margin-top:1px;}
-/* Data grid */
-.data-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;}
-.data-card{background:rgba(0,212,255,.04);border:1px solid rgba(0,212,255,.14);border-radius:7px;padding:6px 9px;}
-.data-card-title{font-family:'Space Mono',monospace;font-size:9px;color:var(--accent);margin-bottom:4px;letter-spacing:.04em;}
-.data-card-items{font-size:11px;color:var(--dim);line-height:1.7;}
-/* Punch map table */
-.punch-table{margin-top:8px;width:100%;border-collapse:collapse;font-size:11px;}
-.punch-table th{font-family:'Space Mono',monospace;font-size:9px;color:var(--setup);padding:4px 8px;border-bottom:1px solid rgba(124,58,237,.2);text-align:left;letter-spacing:.04em;}
-.punch-table td{padding:4px 8px;color:var(--dim);border-bottom:1px solid rgba(255,255,255,.04);}
+
+/* Data grids */
+.data-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:7px;}
+.data-card{background:rgba(0,212,255,.04);border:1px solid rgba(0,212,255,.13);border-radius:7px;padding:5px 8px;}
+.data-card-title{font-family:'Space Mono',monospace;font-size:9px;color:var(--accent);margin-bottom:3px;letter-spacing:.04em;}
+.data-card-items{font-size:11px;color:var(--dim);line-height:1.65;}
+.punch-table{margin-top:7px;width:100%;border-collapse:collapse;font-size:11px;}
+.punch-table th{font-family:'Space Mono',monospace;font-size:9px;color:var(--setup);padding:4px 8px;border-bottom:1px solid rgba(124,58,237,.2);text-align:left;}
+.punch-table td{padding:3px 8px;color:var(--dim);border-bottom:1px solid rgba(255,255,255,.04);}
 .punch-table tr:last-child td{border-bottom:none;}
-.punch-table .arrow{color:var(--accent);font-family:'Space Mono',monospace;}
-/* Live bar */
-.live-bar{display:none;padding:0 .7rem .3rem;flex-shrink:0;}
-.live-txt{font-size:11px;color:var(--muted);font-style:italic;padding:3px 8px;background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.18);border-radius:5px;min-height:22px;}
-.input-wrap{padding:.55rem;border-top:1px solid var(--border);display:flex;gap:6px;background:var(--surface);align-items:flex-end;flex-shrink:0;}
-.cinput{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:7px 11px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s;resize:none;height:36px;max-height:80px;}
+.punch-arr{color:var(--accent);}
+
+.live-bar{display:none;padding:0 .65rem .3rem;flex-shrink:0;}
+.live-txt{font-size:11px;color:var(--muted);font-style:italic;padding:3px 7px;background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.18);border-radius:5px;min-height:20px;}
+.input-wrap{padding:.5rem;border-top:1px solid var(--border);display:flex;gap:5px;background:var(--surface);align-items:flex-end;flex-shrink:0;}
+.cinput{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:7px 11px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s;resize:none;height:35px;max-height:80px;}
 .cinput:focus{border-color:var(--accent);}
 .cinput::placeholder{color:var(--muted);}
-.ibtn{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;transition:all .2s;flex-shrink:0;border:1px solid var(--border);background:var(--surface2);color:var(--dim);}
+.ibtn{width:35px;height:35px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;transition:all .2s;flex-shrink:0;border:1px solid var(--border);background:var(--surface2);color:var(--dim);}
 .ibtn.mic:hover{border-color:var(--danger);color:var(--danger);}
 .ibtn.mic.rec{border-color:var(--danger);color:var(--danger);background:rgba(239,68,68,.12);animation:pglow .8s ease-in-out infinite;}
 .ibtn.send{border-color:var(--accent);background:rgba(0,212,255,.1);color:var(--accent);}
 .ibtn.send:hover{background:rgba(0,212,255,.2);}
 .ibtn.send:disabled{opacity:.35;cursor:not-allowed;}
-footer{padding:.5rem 0;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.nav-btns{display:flex;gap:6px;}
-.nbtn{font-family:'Space Mono',monospace;font-size:10px;padding:5px 11px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;}
+
+footer{padding:.45rem 0;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.nav-btns{display:flex;gap:5px;}
+.nbtn{font-family:'Space Mono',monospace;font-size:10px;padding:5px 10px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;}
 .nbtn:hover{border-color:var(--accent);color:var(--accent);}
 .nbtn.primary{border-color:var(--accent);color:var(--accent);background:rgba(0,212,255,.07);}
 .linfo{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);text-align:center;}
 .linfo strong{color:var(--accent);}
-.prog-wrap{height:2px;background:var(--border);border-radius:99px;overflow:hidden;margin-bottom:3px;width:150px;}
+.prog-wrap{height:2px;background:var(--border);border-radius:99px;overflow:hidden;margin-bottom:2px;width:140px;}
 .prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px;transition:width .4s;}
-.term{font-family:'Space Mono',monospace;font-size:10.5px;background:rgba(0,212,255,.09);border:1px solid rgba(0,212,255,.2);color:var(--accent);padding:0 4px;border-radius:3px;}
-/* UNLOCK */
-.overlay{position:fixed;inset:0;background:rgba(6,9,15,.94);z-index:100;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);}
-.ocard{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:2rem 2.5rem;text-align:center;max-width:430px;}
-.ocard .ri{font-size:48px;margin-bottom:.65rem;}
-.ocard h2{font-family:'Space Mono',monospace;color:var(--accent);font-size:17px;margin-bottom:.4rem;letter-spacing:.06em;}
-.ocard p{color:var(--dim);font-size:12.5px;line-height:1.65;margin-bottom:1.25rem;}
-.ocard p strong{color:var(--text);}
-.mod-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:1.25rem;}
-.mc{font-size:9px;font-family:'Space Mono',monospace;padding:4px 5px;border-radius:6px;border:1px solid var(--border);color:var(--dim);text-align:center;line-height:1.4;}
-.mc.dk{border-color:rgba(232,64,66,.4);color:var(--dk);}
-.mc.setup{border-color:rgba(124,58,237,.4);color:var(--setup);}
-.obtn{font-family:'Space Mono',monospace;font-size:12px;padding:11px 24px;border-radius:10px;border:1px solid var(--accent);background:rgba(0,212,255,.12);color:var(--accent);cursor:pointer;transition:all .2s;letter-spacing:.06em;}
-.obtn:hover{background:rgba(0,212,255,.22);transform:scale(1.02);}
-.vhint{margin-top:.65rem;font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;}
-@keyframes cf{from{transform:translateY(-16px) rotate(0);opacity:1;}to{transform:translateY(60px) rotate(720deg);opacity:0;}}
-.cfbit{position:fixed;width:7px;height:7px;border-radius:2px;pointer-events:none;animation:cf .85s ease-out forwards;z-index:999;}
+.term{font-family:'Space Mono',monospace;font-size:10px;background:rgba(0,212,255,.09);border:1px solid rgba(0,212,255,.2);color:var(--accent);padding:0 4px;border-radius:3px;}
 </style>
 </head>
 <body>
 
-<!-- UNLOCK -->
-<div class="overlay" id="overlay">
-  <div class="ocard">
-    <div class="ri">🤖</div>
-    <h2>Hi! I'm WATT!</h2>
-    <p>Your Workday T&A voice tutor — now with <strong>7 modules</strong> including a brand-new step-by-step <strong>Setup &amp; Go-Live</strong> guide covering all 10 implementation phases.</p>
-    <div class="mod-grid">
-      <div class="mc">Foundations</div>
-      <div class="mc">Time Entry</div>
-      <div class="mc">Absence</div>
-      <div class="mc">Manager</div>
-      <div class="mc">Compliance</div>
-      <div class="mc dk">🔴 dormakaba</div>
-      <div class="mc setup" style="grid-column:span 2">🟣 Setup &amp; Go-Live</div>
+<!-- ══ SCREEN 1: API KEY ══ -->
+<div class="overlay" id="screen-apikey">
+  <div class="apicard">
+    <div style="font-size:42px;text-align:center;margin-bottom:.5rem;">🤖</div>
+    <h2>WATT needs an API key</h2>
+    <p class="sub">WATT is powered by <strong>Claude AI</strong>. You need a free Anthropic API key — it's stored only in your browser and sent directly to Anthropic, never anywhere else.</p>
+    <div class="steps-box">
+      <div class="steps-title">HOW TO GET YOUR FREE KEY (takes 2 min)</div>
+      <div class="step-row"><span class="step-n">01</span><span>Go to <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com/settings/keys</a> and sign up free</span></div>
+      <div class="step-row"><span class="step-n">02</span><span>Click <strong>Create Key</strong> — name it "WATT"</span></div>
+      <div class="step-row"><span class="step-n">03</span><span>Copy the key (starts with <strong>sk-ant-</strong>) and paste it below</span></div>
+      <div class="step-row"><span class="step-n">04</span><span>Your key is saved in this browser — you only enter it once</span></div>
     </div>
-    <button class="obtn" id="unlock-btn">🔊 Start Voice Lesson</button>
-    <div class="vhint">7 modules · 40 lessons · voice-first</div>
+    <div class="saved-bar" id="saved-bar" style="display:none;">
+      <span class="saved-txt">✓ API key saved in this browser</span>
+      <button class="clear-btn" id="clear-btn">Clear &amp; re-enter</button>
+    </div>
+    <div id="key-error" class="key-error"></div>
+    <div class="key-row" id="key-row">
+      <input class="key-input" id="key-input" type="password" placeholder="Paste your sk-ant-... key here" autocomplete="off" spellcheck="false">
+      <button class="key-btn" id="key-btn">Connect →</button>
+    </div>
+    <div class="key-note">Free tier includes $5 credit — enough for many hours of lessons. Your key is never shared or stored on any server.</div>
   </div>
 </div>
 
+<!-- ══ SCREEN 2: WELCOME ══ -->
+<div class="overlay" id="screen-welcome" style="display:none;">
+  <div class="ocard">
+    <div class="ri">🤖</div>
+    <h2>Hi! I'm WATT!</h2>
+    <p>Your Workday T&A voice tutor — <strong>7 modules &amp; 40 lessons</strong> including a full dormakaba B-COMM integration module and step-by-step setup guide.</p>
+    <div class="mod-grid">
+      <div class="mc">Foundations</div><div class="mc">Time Entry</div>
+      <div class="mc">Absence</div><div class="mc">Manager</div>
+      <div class="mc">Compliance</div><div class="mc dk">🔴 dormakaba</div>
+      <div class="mc setup" style="grid-column:span 2">🟣 Setup &amp; Go-Live</div>
+    </div>
+    <button class="obtn" id="start-btn">🔊 Start My Voice Lesson</button>
+    <div class="vhint">7 modules · 40 lessons · voice-first learning</div>
+  </div>
+</div>
+
+<!-- ══ MAIN APP ══ -->
 <div class="app">
 <header>
   <div class="logo">WATT <span>// voice tutor</span></div>
@@ -227,23 +289,21 @@ footer{padding:.5rem 0;border-top:1px solid var(--border);display:flex;align-ite
       </svg>
     </div>
     <div class="nameplate">WATT<small>Workday Voice Tutor</small></div>
-    <div class="status-pill"><div class="sdot idle" id="sdot"></div><span id="stxt">Starting up...</span></div>
-
+    <div class="status-pill"><div class="sdot idle" id="sdot"></div><span id="stxt">Ready</span></div>
     <div class="voice-panel">
       <div class="vrow">
         <span class="vlabel">VOICE</span>
         <div class="vbtns">
-          <button class="vb on" id="tts-btn">🔊</button>
-          <button class="vb" id="stop-btn">⏹</button>
-          <button class="vb" id="replay-btn">🔁</button>
+          <button class="vb on" id="tts-btn" title="Toggle voice">🔊</button>
+          <button class="vb" id="stop-btn" title="Stop">⏹</button>
+          <button class="vb" id="replay-btn" title="Replay">🔁</button>
         </div>
       </div>
-      <div class="vname" id="vname">detecting voice...</div>
+      <div class="vname" id="vname">detecting...</div>
       <div class="vrow"><span class="vlabel">VOL</span><input type="range" id="vol" min="0" max="1" step="0.05" value="1"><span class="rval" id="vol-v">100%</span></div>
       <div class="vrow"><span class="vlabel">SPEED</span><input type="range" id="spd" min="0.7" max="1.5" step="0.05" value="1.0"><span class="rval" id="spd-v">1.0x</span></div>
       <div class="vrow"><span class="vlabel">PITCH</span><input type="range" id="pitch" min="0.8" max="2.0" step="0.05" value="1.3"><span class="rval" id="pitch-v">1.3</span></div>
     </div>
-
     <div class="qa-sec">
       <div class="qa-title">QUICK ACTIONS</div>
       <button class="qa-btn" onclick="sendMsg('Give me a real-world example of this')">💡 Real-world example</button>
@@ -251,8 +311,8 @@ footer{padding:.5rem 0;border-top:1px solid var(--border);display:flex;align-ite
       <button class="qa-btn" onclick="sendMsg('Quiz me with a multiple choice question on this')">🧠 Quiz me now</button>
       <button class="qa-btn" onclick="sendMsg('What are the key things to remember from this lesson?')">⭐ Key takeaways</button>
       <button class="qa-btn dk" onclick="sendMsg('Walk me through the full clock-in journey from terminal tap to Workday timesheet')">🔴 Full clock-in flow</button>
-      <button class="qa-btn setup" onclick="sendMsg('What could go wrong at this phase and how do I fix it?')">🟣 Troubleshoot this phase</button>
-      <button class="qa-btn setup" onclick="sendMsg('What Workday APIs are used at this step and what do they do?')">🟣 APIs used here</button>
+      <button class="qa-btn setup" onclick="sendMsg('What could go wrong at this phase and how do I fix it?')">🟣 Troubleshoot phase</button>
+      <button class="qa-btn setup" onclick="sendMsg('What Workday APIs are used at this step?')">🟣 APIs at this step</button>
     </div>
   </div>
 
@@ -262,19 +322,19 @@ footer{padding:.5rem 0;border-top:1px solid var(--border);display:flex;align-ite
       <div class="hdot" style="background:#ef4444"></div>
       <div class="hdot" style="background:#f59e0b"></div>
       <div class="hdot" style="background:#10b981"></div>
-      <span style="margin-left:6px" id="chat-label">WATT // voice session</span>
+      <span style="margin-left:5px" id="chat-label">WATT // voice session</span>
       <div class="wavebar" id="wavebar">
-        <div class="wbar" style="height:14px"></div><div class="wbar" style="height:14px"></div>
-        <div class="wbar" style="height:14px"></div><div class="wbar" style="height:14px"></div>
-        <div class="wbar" style="height:14px"></div>
+        <div class="wbar" style="height:12px"></div><div class="wbar" style="height:12px"></div>
+        <div class="wbar" style="height:12px"></div><div class="wbar" style="height:12px"></div>
+        <div class="wbar" style="height:12px"></div>
       </div>
     </div>
     <div class="chat-msgs" id="chat"></div>
     <div class="live-bar" id="live-bar"><div class="live-txt" id="live-txt">Listening...</div></div>
     <div class="input-wrap">
       <textarea class="cinput" id="input" placeholder="Type or 🎤 speak your question..." rows="1"></textarea>
-      <button class="ibtn mic" id="mic-btn">🎤</button>
-      <button class="ibtn send" id="send-btn">&#9658;</button>
+      <button class="ibtn mic" id="mic-btn" title="Speak">🎤</button>
+      <button class="ibtn send" id="send-btn" title="Send">&#9658;</button>
     </div>
   </div>
 </div>
@@ -296,164 +356,208 @@ footer{padding:.5rem 0;border-top:1px solid var(--border);display:flex;align-ite
 </div>
 
 <script>
-/* ══════════════════════════
-   COURSE DATA — 7 modules, 40 lessons
-══════════════════════════ */
+'use strict';
+
+/* ══ COURSE DATA ══ */
 const MODS=[
-  {title:"Foundations",type:"core",lessons:[
-    {t:"What is Workday T&A?"},
-    {t:"Exempt vs Non-Exempt employees"},
-    {t:"The T&A Ecosystem"},
-    {t:"Cloud SaaS — no installs needed"}
-  ]},
-  {title:"Time Entry",type:"core",lessons:[
-    {t:"How to enter your time"},
-    {t:"Web vs mobile time clock"},
-    {t:"Geofencing for field workers"},
-    {t:"Timesheet deadlines and lockouts"},
-    {t:"How to correct time mistakes"}
-  ]},
-  {title:"Absence Mgmt",type:"core",lessons:[
-    {t:"Time off vs leave of absence"},
-    {t:"How to request time off"},
-    {t:"Checking your PTO balance"},
-    {t:"Types of leave Workday supports"},
-    {t:"Accrual policies and carryover rules"}
-  ]},
-  {title:"Manager Tools",type:"core",lessons:[
-    {t:"Your role as a manager"},
-    {t:"Approving timecards"},
-    {t:"Exception management"},
-    {t:"How overtime auto-calculates"},
-    {t:"Forecasting team time-off"},
-    {t:"The manager dashboard"}
-  ]},
-  {title:"Compliance",type:"core",lessons:[
-    {t:"Reducing compliance risk"},
-    {t:"Physical time clock integration"},
-    {t:"Overtime reports and analytics"},
-    {t:"Global absence analytics"},
-    {t:"Best practices for T&A success"}
-  ]},
-  {title:"dormakaba + Workday",type:"dk",lessons:[
-    {t:"Meet the dormakaba K7 terminal family"},
-    {t:"dormakaba 98 00: hardware deep-dive"},
-    {t:"What data B-COMM pulls from Workday"},
-    {t:"What transaction data B-COMM sends back"},
-    {t:"The full clock-in flow: terminal to timesheet"},
-    {t:"B-COMM for HR, payroll, and IT teams"},
-    {t:"Cloud vs on-premise deployment options"}
-  ]},
-  {title:"Setup & Go-Live",type:"setup",lessons:[
-    {t:"Architecture overview and prerequisites"},
-    {t:"Phase 1 & 2: Enable Workday Time Tracking and security"},
-    {t:"Phase 3: Creating the Integration System User (ISU)"},
-    {t:"Phase 4: Workday API configuration and web services"},
-    {t:"Phase 5: Installing and configuring B-COMM"},
-    {t:"Phase 6: Registering dormakaba clocks in B-COMM"},
-    {t:"Phase 7: Badge auth, punch types, and worktag mapping"},
-    {t:"Phase 8: Time Tracking rules — overtime, meals, grace periods"},
-    {t:"Phase 9: End-to-end testing and offline recovery"},
-    {t:"Phase 10: Production cutover and go-live checklist"},
-    {t:"Troubleshooting: duplicate punches, missing workers, sync failures"}
-  ]}
+  {title:"Foundations",type:"core",lessons:[{t:"What is Workday T&A?"},{t:"Exempt vs Non-Exempt employees"},{t:"The T&A Ecosystem"},{t:"Cloud SaaS — no installs needed"}]},
+  {title:"Time Entry",type:"core",lessons:[{t:"How to enter your time"},{t:"Web vs mobile time clock"},{t:"Geofencing for field workers"},{t:"Timesheet deadlines and lockouts"},{t:"How to correct time mistakes"}]},
+  {title:"Absence Mgmt",type:"core",lessons:[{t:"Time off vs leave of absence"},{t:"How to request time off"},{t:"Checking your PTO balance"},{t:"Types of leave Workday supports"},{t:"Accrual policies and carryover rules"}]},
+  {title:"Manager Tools",type:"core",lessons:[{t:"Your role as a manager"},{t:"Approving timecards"},{t:"Exception management"},{t:"How overtime auto-calculates"},{t:"Forecasting team time-off"},{t:"The manager dashboard"}]},
+  {title:"Compliance",type:"core",lessons:[{t:"Reducing compliance risk"},{t:"Physical time clock integration"},{t:"Overtime reports and analytics"},{t:"Global absence analytics"},{t:"Best practices for T&A success"}]},
+  {title:"dormakaba + Workday",type:"dk",lessons:[{t:"Meet the dormakaba K7 terminal family"},{t:"dormakaba 98 00: hardware deep-dive"},{t:"What data B-COMM pulls from Workday"},{t:"What transaction data B-COMM sends back"},{t:"The full clock-in flow: terminal to timesheet"},{t:"B-COMM for HR, payroll, and IT teams"},{t:"Cloud vs on-premise deployment options"}]},
+  {title:"Setup & Go-Live",type:"setup",lessons:[{t:"Architecture overview and prerequisites"},{t:"Phase 1 & 2: Enable Workday Time Tracking and security"},{t:"Phase 3: Creating the Integration System User (ISU)"},{t:"Phase 4: Workday API configuration and web services"},{t:"Phase 5: Installing and configuring B-COMM"},{t:"Phase 6: Registering dormakaba clocks in B-COMM"},{t:"Phase 7: Badge auth, punch types, and worktag mapping"},{t:"Phase 8: Time Tracking rules — overtime, meals, grace periods"},{t:"Phase 9: End-to-end testing and offline recovery"},{t:"Phase 10: Production cutover and go-live checklist"},{t:"Troubleshooting: duplicate punches, missing workers, sync failures"}]}
 ];
 
-/* ══════════════════════════
-   SYSTEM PROMPT
-══════════════════════════ */
-const SYS=`You are WATT, a super friendly upbeat 20-year-old from Southern California teaching Workday Time and Attendance and physical clock integration. You speak like a smart warm friend, never a textbook.
+const SYS=`You are WATT, a super friendly upbeat 20-year-old from Southern California teaching Workday Time and Attendance and physical clock integration. Speak like a smart warm friend, never a textbook.
 
 CRITICAL — spoken aloud by text-to-speech:
-- Only natural conversational sentences. Zero bullets. Zero dashes. Zero asterisks. Zero markdown. Zero symbols.
-- Keep responses under 90 words for comfortable listening.
-- Use contractions and California casual: "okay so", "basically", "so here's the deal", "the cool thing is", "totally", "right?", "super easy", "no worries".
-- After teaching, invite them to ask more, get an example, or get quizzed.
-- Never list things with letters or numbers aloud. Weave everything into flowing speech.
+Only natural conversational sentences. Zero bullets. Zero dashes. Zero asterisks. Zero markdown. Zero symbols. Keep responses under 90 words. Use contractions and California casual: okay so, basically, so here is the deal, the cool thing is, totally, right, super easy, no worries. After teaching invite them to ask more or get quizzed. Never list with letters or numbers aloud.
 
-WORKDAY T&A CORE KNOWLEDGE:
-Foundations: Cloud-based SaaS, no on-premise. Exempt = no overtime. Non-exempt = overtime eligible. Hourly paid by hours logged. Integrates with HCM, Payroll, Absence Management.
-Time Entry: Web or mobile with auto timestamps. Geofencing for field workers. Time Period Lockout deadline. Self-correct before submission; manager corrects after.
-Absence: Time off = short-term, manager-approved. Leave of absence = long-term, HR-approved. Over 30 days needs formal leave. Workday tracks accruals, carryover, auto-approval.
-Manager Tools: Approve after submission only. Exception management flags anomalies. Auto overtime conversion. Manager dashboard shows trends, exceptions, queues.
-Compliance: Automated pay rules. Time clock API sync. Real-time overtime reports. Global absence analytics.
+WORKDAY T&A: Cloud SaaS no on-premise. Exempt no overtime, non-exempt has overtime, hourly paid by hours logged. Integrates HCM Payroll Absence. Web or mobile entry with timestamps. Geofencing for field workers. Time Period Lockout deadline. Self-correct before submission, manager corrects after. Time off is short-term manager-approved. Leave of absence is long-term HR-approved. Over 30 days needs formal leave. Accruals carryover auto-approval tracked. Manager approves after submission only. Exception management flags anomalies. Auto overtime. Dashboard shows trends exceptions queues. Automated pay rules. API sync. Overtime reports. Global analytics.
 
-DORMAKABA HARDWARE (from official factsheet and K7 video):
-The K7 is dormakaba's newest terminal generation. The 98 00 is the premium K7 model with a 10.1 inch 1280x800 touchscreen, scratch-resistant glass, i.MX8M mini quad-core processor, 4GB RAM, 16GB storage, dormakaba Android OS (updateable), built-in 1W speaker, microphone, and text-to-speech. Identification: smartphone mobile access, RFID (LEGIC/MIFARE), or fingerprint biometrics. Fingerprint prevents buddy-punching. Powered by PoE (IEEE 802.3at). Operates in -5 to +45C and 5-85% humidity. IP20 or IP65 rated. IK06 impact resistant. 266.5x266.2x65.6mm. Stores 50,000 records. Door access and CardLink optional. Variants: 98 20, 98 40, 98 60. Family also includes 96 00 and 97 00 models.
+DORMAKABA 98 00: K7 generation premium model. 10.1 inch 1280 by 800 touchscreen scratch-resistant glass. i.MX8M mini quad-core 4GB RAM 16GB storage. dormakaba Android OS updateable. 1 watt speaker microphone text-to-speech. Identification via smartphone RFID LEGIC MIFARE or fingerprint biometrics. Fingerprint prevents buddy-punching. PoE IEEE 802.3at powered. Operates minus 5 to plus 45 Celsius 5 to 85 percent humidity. IP20 or IP65 rated. IK06 impact resistant. 266.5 by 266.2 by 65.6mm. 50000 records. Door access and CardLink optional. Variants 98 20 98 40 98 60. Family includes 96 00 and 97 00.
 
-B-COMM FOR WORKDAY (from official dormakaba product page):
-B-COMM is dormakaba's enterprise middleware connecting physical terminals to Workday Time Tracking. Over 1,800 customers. Certified Workday global partner on Workday Marketplace.
-Three pillars: INTEGRATE — standard Workday web services, no redundant data entry, auto-updates timesheet. VALIDATE — real-time validation, 24/7 availability, works during Workday outages, reduces corrections. COMMUNICATE — employee messaging at the terminal.
-Validation data pulled from Workday: employee name, badge number, direct manager, job profiles, positions, accrual balances, time clock attributes, cost centers, custom organizations, project numbers, custom worktags.
-Transaction data sent to Workday: check-in, time entry code, time clock ID, break, meal, check-out, job profile, position, cost center, custom organization, custom worktag, project number, time off requests.
-HR value: prevents duplicate timesheets, reduces manual work, enhances compliance, individualized employee experience.
-Payroll value: reduces errors, monitors attendance and on-premise status, multiple job and duty input, enforces meals and breaks, prevents early clock-in, eliminates unauthorized overtime.
-IT value: regulatory compliance, OnDemand cloud or OnPremise, certified Workday partner, 24/7 data collection, flexible device branding.
+B-COMM FOR WORKDAY: Enterprise middleware connecting terminals to Workday Time Tracking. Over 1800 customers. Certified Workday global partner on Workday Marketplace. Three pillars: INTEGRATE using standard Workday web services no redundant data entry auto-updates timesheet. VALIDATE real-time validation 24/7 availability works during Workday outages. COMMUNICATE employee messaging at terminal. Validation data pulled: employee name badge number direct manager job profiles positions accrual balances time clock attributes cost centers custom organizations project numbers custom worktags. Transaction data sent: check-in time entry code time clock ID break meal check-out job profile position cost center custom organization custom worktag project number time off requests. HR value prevents duplicate timesheets reduces manual work individualised experience. Payroll value reduces errors monitors attendance multiple job input enforces meals and breaks prevents early clock-in eliminates unauthorized overtime. IT value regulatory compliance OnDemand cloud or OnPremise certified partner 24/7 data collection.
 
-SETUP AND GO-LIVE GUIDE (from the step-by-step implementation document):
-ARCHITECTURE: Employee punches clock → dormakaba terminal → B-COMM middleware → Workday Web Services API → Workday Time Tracking and timesheets. Prerequisites are Workday Time Tracking license, dormakaba clocks, B-COMM installed or provisioned, and Workday admin access.
+SETUP GUIDE: Architecture is employee punches clock to dormakaba terminal to B-COMM middleware to Workday Web Services API to Workday timesheets. Prerequisites are Workday Time Tracking license dormakaba clocks B-COMM installed Workday admin access. Phase 1 enable Time Tracking Time Entry Templates Time Clock Events Time Calculations in Workday configure worker profiles pay groups cost centers worktags first. Phase 2 security create ISU DORMAKABA with strong password and Do Not Allow UI Sessions create Integration System Security Group unconstrained add ISU grant read workers read organizations read worktags submit time punches through domains Worker Data Public Worker Reports Worker Data Time Tracking Organizations Manage Time Clock Events Time Tracking APIs then activate pending security policy changes. Phase 3 APIs gather tenant URL REST or SOAP endpoints tenant name API version credentials use Basic Authentication test with Postman or SoapUI run Get Workers test. Phase 4 install B-COMM on Windows Server with SQL database or cloud configure tenant URL API endpoint ISU credentials polling frequency worker sync 15 to 60 minutes punch sync real-time to 5 minutes. Phase 5 register each clock with device ID IP address time zone firmware HTTPS or TCP IP protocol map Badge Number to Workday Worker ID using Employee ID or Universal ID this mapping is critical. Phase 6 map clock buttons Clock In to Clock In Clock Out to Clock Out Break to Meal Break Transfer to Worktag Transfer map cost centers departments projects as labor worktags. Phase 7 create Time Entry Templates for manufacturing hourly salary workers configure overtime rules meal penalties shift differentials grace periods early clock restrictions. Phase 8 test basic clock in break meal labor transfer offline recovery by disconnecting network confirm punches store locally then sync on reconnect. Phase 9 production cutover move API credentials to production tenant switch endpoints repoint all clocks validate worker sync monitor first payroll cycle. Always maintain Sandbox Test Production environments separately. Common problems: duplicate punches caused by retry logic misconfiguration fixed by enabling transaction IDs and deduplication in B-COMM. Worker Not Found caused by badge mismatch fixed by verifying Employee ID mapping. Punch appears but no time block caused by incomplete time calculations fixed by checking Time Entry Templates and calculation tags. Key APIs Time Clock Events API Staffing APIs Worker APIs Organization APIs.
 
-PHASE 1 — PREPARE WORKDAY: Enable Time Tracking, Time Entry Templates, Time Clock Events, Time Calculations, and optionally Shift Scheduling in Workday. You also need worker profiles, supervisory organizations, pay groups, locations, cost centers, and worktags all configured before you start the integration.
-
-PHASE 2 — WORKDAY SECURITY: Create an Integration System User called ISU underscore DORMAKABA for example, set a strong password, and enable Do Not Allow UI Sessions so it can only be used by the integration, not a human logging into Workday. Then create an Integration System Security Group, add the ISU to it, and grant it permissions to read workers, read organizations, read worktags, and submit time punches through domains like Worker Data Public Worker Reports, Worker Data Time Tracking, Organizations, Manage Time Clock Events, and Time Tracking APIs. Then activate pending security policy changes.
-
-PHASE 3 — WORKDAY APIS: B-COMM uses standard Workday web services. You need the Workday tenant URL, REST or SOAP endpoints, tenant name, API version, username, password, and authentication method. Most dormakaba deployments use Basic Authentication. A typical endpoint looks like impl.workday.com then ccx service then your tenant name then Human Resources then a version number. Test connectivity with Postman or SoapUI. Run a Get Workers test to confirm it works.
-
-PHASE 4 — INSTALL B-COMM: Deploy on-premise on Windows Server with SQL database, or cloud-hosted, or hybrid. You need HTTPS access to Workday and a static IP. In the B-COMM admin console, configure the Workday tenant URL, API endpoint, ISU credentials, polling frequency, and worker sync interval. Typical intervals are 15 to 60 minutes for worker sync and real-time to 5 minutes for punch sync.
-
-PHASE 5 — CONFIGURE TIME CLOCKS: Register each clock in B-COMM with its device ID, IP address, time zone, firmware version, and communication protocol which is usually HTTPS or TCP IP. Then configure badge authentication by choosing RFID, PIN, or fingerprint and mapping Badge Number to Workday Worker ID using Employee ID or Universal ID. This mapping is critical.
-
-PHASE 6 — PUNCH TYPES AND WORKTAGS: Map clock buttons to Workday events. Clock In maps to Clock In. Clock Out maps to Clock Out. Break maps to Meal or Break. Transfer maps to Worktag Transfer. B-COMM translates these into Workday Time Clock Events. Also map labor worktags like cost centers, departments, projects, and locations. B-COMM sends these automatically.
-
-PHASE 7 — TIME TRACKING RULES: Create Time Entry Templates in Workday for different worker groups like manufacturing, hourly office, or salaried employees. Configure overtime rules, meal penalties, shift differentials, grace periods, and early clock restrictions. dormakaba supports meal enforcement, unauthorized overtime prevention, and multiple labor transfers.
-
-PHASE 8 — TESTING: Run end-to-end test scenarios including basic clock in, clock out, break, meal start and end, labor transfer department change, and offline recovery. For offline testing, disconnect the network, punch the clock, confirm it stores locally, reconnect, and confirm it syncs. This offline recovery is one of the biggest benefits of dormakaba clocks.
-
-PHASE 9 — PRODUCTION CUTOVER: Move API credentials, switch endpoints from implementation tenant to production tenant, repoint all clocks, validate worker sync, and monitor the first payroll cycle closely.
-
-ENVIRONMENTS: Always maintain Sandbox, Test, and Production environments separately.
-
-COMMON PROBLEMS AND FIXES:
-Duplicate Punches — caused by misconfigured retry logic. Fix by enabling transaction IDs and deduplicating in B-COMM.
-Worker Not Found — caused by badge number mismatch between dormakaba and Workday. Fix by verifying Employee ID or Universal ID mapping.
-Punch appears but no time block in Workday — caused by incomplete time calculations or misconfigured Time Entry Templates. Fix by checking Workday Time Entry Templates and calculation tags.
-Authentication errors and failed punches should be monitored via B-COMM logs. Watch for worker sync failures especially during the first payroll cycle.
-
-KEY APIS TYPICALLY USED: Time Clock Events API, Staffing APIs, Worker APIs, and Organization APIs. Most certified vendors use Time Clock Events rather than creating time blocks directly.
-
-DEPLOYMENT MODELS: Large organizations use regional B-COMM servers pointing to a central Workday tenant. Smaller organizations use a single B-COMM server.
-
-For quizzes: one conversational multiple choice question with four naturally spoken options, no letters or symbols.`;
+For quizzes: one conversational multiple choice question with four naturally spoken options no letters or symbols.`;
 
 /* ══ STATE ══ */
-let modIdx=0,lesIdx=0,loading=false,hist=[],done=new Set(),ttsOn=true,lastRaw='',mTmr=null,isRec=false,recog=null;
+let modIdx=0, lesIdx=0, loading=false, hist=[], done=new Set();
+let ttsOn=true, lastRaw='', mTmr=null, isRec=false, recog=null;
+let apiKey='';
 const synth=window.speechSynthesis;
 let voice=null;
 
-/* ══ VOICE ══ */
-function pickVoice(){
-  const all=synth.getVoices();if(!all.length)return;
-  const sc=v=>{const n=v.name.toLowerCase(),l=(v.lang||'').toLowerCase();if(!/en/.test(l))return -999;let s=0;if(/en.us/i.test(l))s+=20;if(/samantha/i.test(n))s+=60;if(/ava/i.test(n))s+=55;if(/allison/i.test(n))s+=50;if(/zira/i.test(n))s+=48;if(/jenny/i.test(n))s+=46;if(/aria/i.test(n))s+=44;if(/sasha|emma/i.test(n))s+=40;if(/google us english/i.test(n))s+=35;if(/kathy|vicki|victoria|karen/i.test(n))s+=15;if(/\b(daniel|david|alex|tom|james|fred|ralph|albert|bruce|lee|rishi|arthur|george|oliver|harry|aaron|ryan|mark|paul|eric)\b/i.test(n))s-=40;return s;};
-  voice=[...all].sort((a,b)=>sc(b)-sc(a))[0]||null;
-  if(voice){const nm=voice.name.replace(/(Microsoft|Google)/i,'').trim().split(' ').slice(0,3).join(' ');document.getElementById('vname').textContent='🎙 '+nm;}
-}
-synth.onvoiceschanged=pickVoice;[100,400,900].forEach(d=>setTimeout(pickVoice,d));
+/* ══ KEY STORAGE ══ */
+const KEY_NAME='watt_anthropic_key';
+function getStoredKey(){try{return localStorage.getItem(KEY_NAME)||'';}catch(e){return '';}}
+function storeKey(k){try{localStorage.setItem(KEY_NAME,k);}catch(e){}}
+function deleteKey(){try{localStorage.removeItem(KEY_NAME);}catch(e){}}
 
-function cleanSpeech(t){return t.replace(/<[^>]+>/g,' ').replace(/\*\*(.*?)\*\*/g,'$1').replace(/`(.*?)`/g,'$1').replace(/[#\-_•*→←►◄↓]/g,' ').replace(/\s+/g,' ').trim();}
+/* ══ API KEY SCREEN ══ */
+function showScreen(id){
+  ['screen-apikey','screen-welcome'].forEach(s=>{
+    const el=document.getElementById(s);
+    if(el) el.style.display = s===id ? 'flex' : 'none';
+  });
+}
+
+async function testAndSaveKey(key){
+  // Validate format first
+  if(!key || !key.startsWith('sk-ant-')){
+    return {ok:false, msg:'Key should start with sk-ant- — check you copied it fully.'};
+  }
+  // Test with minimal call
+  try{
+    const resp = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key': key,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-allow-cors':'true'
+      },
+      body: JSON.stringify({
+        model:'claude-haiku-4-5-20251001',
+        max_tokens:5,
+        messages:[{role:'user',content:'hi'}]
+      })
+    });
+    if(resp.status===200 || resp.status===400){
+      // 200 = valid, 400 can mean valid key but bad request — both mean key accepted
+      storeKey(key);
+      apiKey=key;
+      return {ok:true};
+    }
+    if(resp.status===401) return {ok:false, msg:'Invalid API key. Double-check you copied the full key.'};
+    if(resp.status===429) return {ok:false, msg:'Rate limit hit. Wait a moment and try again.'};
+    // Other errors — key might still be valid, proceed anyway
+    storeKey(key);
+    apiKey=key;
+    return {ok:true};
+  }catch(e){
+    // Network / CORS error — if key looks valid, accept it and let real calls surface errors
+    if(key.length > 40){
+      storeKey(key);
+      apiKey=key;
+      return {ok:true};
+    }
+    return {ok:false, msg:'Network error. Check your internet connection.'};
+  }
+}
+
+function initKeyScreen(){
+  const stored = getStoredKey();
+  const errorEl  = document.getElementById('key-error');
+  const keyRow   = document.getElementById('key-row');
+  const savedBar = document.getElementById('saved-bar');
+  const keyInput = document.getElementById('key-input');
+  const keyBtn   = document.getElementById('key-btn');
+  const clearBtn = document.getElementById('clear-btn');
+
+  function showSaved(){
+    savedBar.style.display='flex';
+    keyRow.style.display='none';
+    keyBtn.textContent='Start WATT →';
+  }
+  function showInput(){
+    savedBar.style.display='none';
+    keyRow.style.display='flex';
+    keyBtn.textContent='Connect →';
+  }
+
+  if(stored){
+    apiKey=stored;
+    showSaved();
+    // Re-attach btn click for the "Start WATT" button case
+  } else {
+    showInput();
+  }
+
+  clearBtn.addEventListener('click',()=>{
+    deleteKey(); apiKey='';
+    errorEl.textContent='';
+    keyInput.value='';
+    showInput();
+    keyInput.focus();
+  });
+
+  async function handleConnect(){
+    errorEl.textContent='';
+    const key = stored && apiKey ? apiKey : keyInput.value.trim();
+    if(!key){errorEl.textContent='Please paste your API key above.';return;}
+    keyBtn.disabled=true;
+    keyBtn.textContent='Checking...';
+    const result = await testAndSaveKey(key);
+    keyBtn.disabled=false;
+    if(result.ok){
+      showScreen('screen-welcome');
+    } else {
+      errorEl.textContent=result.msg||'Something went wrong.';
+      keyBtn.textContent = stored ? 'Start WATT →' : 'Connect →';
+    }
+  }
+
+  keyBtn.addEventListener('click', handleConnect);
+  keyInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();handleConnect();}});
+}
+
+/* ══ VOICE PICKER ══ */
+function pickVoice(){
+  const all=synth.getVoices(); if(!all.length) return;
+  const sc=v=>{
+    const n=v.name.toLowerCase(), l=(v.lang||'').toLowerCase();
+    if(!/en/.test(l)) return -999;
+    let s=0;
+    if(/en.us/i.test(l)) s+=20;
+    if(/samantha/i.test(n)) s+=60; if(/ava/i.test(n)) s+=55;
+    if(/allison/i.test(n)) s+=50; if(/zira/i.test(n)) s+=48;
+    if(/jenny/i.test(n)) s+=46;   if(/aria/i.test(n)) s+=44;
+    if(/sasha|emma/i.test(n)) s+=40;
+    if(/google us english/i.test(n)) s+=35;
+    if(/kathy|vicki|victoria|karen/i.test(n)) s+=15;
+    if(/\b(daniel|david|alex|tom|james|fred|ralph|albert|bruce|lee|rishi|arthur|george|oliver|harry|aaron|ryan|mark|paul|eric)\b/i.test(n)) s-=40;
+    return s;
+  };
+  voice=[...all].sort((a,b)=>sc(b)-sc(a))[0]||null;
+  if(voice){
+    const nm=voice.name.replace(/(Microsoft|Google)/i,'').trim().split(' ').slice(0,3).join(' ');
+    document.getElementById('vname').textContent='🎙 '+nm;
+  }
+}
+synth.onvoiceschanged=pickVoice;
+[100,400,900].forEach(d=>setTimeout(pickVoice,d));
+
+/* ══ SPEAK ══ */
+function cleanSpeech(t){
+  return t.replace(/<[^>]+>/g,' ')
+    .replace(/\*\*(.*?)\*\*/g,'$1')
+    .replace(/`(.*?)`/g,'$1')
+    .replace(/[#_•*→←►◄↓\-]/g,' ')
+    .replace(/\s+/g,' ').trim();
+}
 let kaT=null;
-function speak(raw,onDone){
+function speak(raw, onDone){
   if(!ttsOn||!raw.trim()){onDone&&onDone();return;}
-  synth.cancel();if(kaT)clearInterval(kaT);
+  synth.cancel();
+  if(kaT) clearInterval(kaT);
   const u=new SpeechSynthesisUtterance(cleanSpeech(raw));
-  if(voice)u.voice=voice;u.lang='en-US';
+  if(voice) u.voice=voice;
+  u.lang='en-US';
   u.volume=parseFloat(document.getElementById('vol').value);
   u.rate=parseFloat(document.getElementById('spd').value);
   u.pitch=parseFloat(document.getElementById('pitch').value);
   u.onstart=()=>{setBot('speaking');startMouth();startWave();};
   u.onend=()=>{stopMouth();stopWave();setBot('ready');onDone&&onDone();};
-  u.onerror=e=>{if(e.error==='interrupted')return;stopMouth();stopWave();setBot('idle');onDone&&onDone();};
+  u.onerror=ev=>{if(ev.error==='interrupted')return;stopMouth();stopWave();setBot('idle');onDone&&onDone();};
   synth.speak(u);
-  kaT=setInterval(()=>{if(synth.speaking&&!synth.paused){synth.pause();synth.resume();}else if(!synth.speaking)clearInterval(kaT);},12000);
+  kaT=setInterval(()=>{
+    if(synth.speaking&&!synth.paused){synth.pause();synth.resume();}
+    else if(!synth.speaking) clearInterval(kaT);
+  },12000);
 }
 function stopSpeak(){synth.cancel();if(kaT)clearInterval(kaT);stopMouth();stopWave();setBot('idle');}
 
@@ -467,12 +571,13 @@ function stopWave(){document.getElementById('wavebar').classList.remove('waveon'
 
 /* ══ BOT STATE ══ */
 function setBot(s){
-  const dot=document.getElementById('sdot'),txt=document.getElementById('stxt'),ring=document.getElementById('think-ring'),sc=document.getElementById('rscene');
-  dot.className='sdot';ring.setAttribute('opacity','0');ring.style.cssText='';sc.classList.remove('speaking');
+  const dot=document.getElementById('sdot'), txt=document.getElementById('stxt');
+  const ring=document.getElementById('think-ring'), sc=document.getElementById('rscene');
+  dot.className='sdot'; ring.setAttribute('opacity','0'); ring.style.cssText=''; sc.classList.remove('speaking');
   if(s==='speaking'){dot.classList.add('speaking');txt.textContent='Speaking...';sc.classList.add('speaking');}
   else if(s==='thinking'){dot.classList.add('thinking');txt.textContent='Thinking...';ring.setAttribute('opacity','1');ring.style.cssText='animation:tspin 1s linear infinite;transform-origin:90px 37px;';}
   else if(s==='ready'){dot.classList.add('ready');txt.textContent='Ready to teach';}
-  else{dot.classList.add('idle');txt.textContent='Idle';}
+  else{dot.classList.add('idle');txt.textContent='Ready';}
 }
 
 /* ══ HELPERS ══ */
@@ -482,13 +587,13 @@ function curL(){return MODS[modIdx].lessons[lesIdx];}
 function curType(){return MODS[modIdx].type;}
 
 function renderPills(){
-  const c=document.getElementById('pills');c.innerHTML='';
+  const c=document.getElementById('pills'); c.innerHTML='';
   MODS.forEach((m,i)=>{
     const allD=m.lessons.every((_,li)=>done.has(i+'-'+li));
     const p=document.createElement('div');
     let cls='pill'+(i===modIdx?' active':'')+(allD?' done':'');
-    if(m.type==='dk')cls+=' dk-pill';
-    if(m.type==='setup')cls+=' setup-pill';
+    if(m.type==='dk') cls+=' dk-pill';
+    if(m.type==='setup') cls+=' setup-pill';
     p.className=cls;
     p.textContent=m.type==='dk'?'🔴 '+m.title:m.type==='setup'?'🟣 '+m.title:m.title;
     p.onclick=()=>{modIdx=i;lesIdx=0;startLesson();};
@@ -499,40 +604,42 @@ function renderPills(){
   document.getElementById('chat-label').textContent=labels[curType()]||'WATT // voice session';
 }
 function updateFoot(){
-  const idx=gIdx(),tot=totL();
+  const idx=gIdx(), tot=totL();
   document.getElementById('lnum').textContent=idx+1;
   document.getElementById('ltot').textContent=tot;
   document.getElementById('prog-fill').style.width=Math.round((idx/tot)*100)+'%';
-  const cb=document.getElementById('cbar');if(cb)cb.setAttribute('width',Math.round((done.size/tot)*62));
+  const cb=document.getElementById('cbar');
+  if(cb) cb.setAttribute('width',Math.round((done.size/tot)*62));
 }
 
-/* ══ PHASE CARD BUILDER ══ */
-function buildPhaseCard(lessonTitle){
-  const phaseMap={
-    'Architecture overview':{icon:'🏗️',label:'SYSTEM ARCHITECTURE',steps:['Employee punches dormakaba terminal','B-COMM middleware captures and validates the event','Workday Web Services API receives the data','Workday Time Tracking timesheet updates automatically']},
-    'Phase 1 & 2':{icon:'⚙️',label:'PHASE 1 & 2 — WORKDAY PREP & SECURITY',steps:['Enable Time Tracking, Time Entry Templates, Time Clock Events in Workday','Ensure worker profiles, pay groups, cost centers, worktags are all configured','Create Integration System User (ISU_DORMAKABA) with strong password','Set "Do Not Allow UI Sessions" so only B-COMM can use this account']},
-    'Phase 3':{icon:'🔐',label:'PHASE 3 — INTEGRATION SYSTEM USER',steps:['Create Integration System Security Group (unconstrained type)','Add ISU_DORMAKABA to the security group','Grant read access to workers, organizations, worktags','Grant submit access to time punches and Time Tracking APIs','Activate Pending Security Policy Changes in Workday']},
-    'Phase 4':{icon:'🌐',label:'PHASE 4 — API & WEB SERVICES',steps:['Gather Workday tenant URL, tenant name, API version, and credentials','Confirm authentication method (most use Basic Auth)','Test connectivity using Postman or SoapUI','Run a Get Workers API call to confirm worker data flows correctly','Verify Time Clock Event posting works in sandbox/implementation tenant']},
-    'Phase 5':{icon:'💻',label:'PHASE 5 — B-COMM INSTALLATION',steps:['Deploy B-COMM on Windows Server (on-premise) or cloud-hosted','Configure SQL database and HTTPS access to Workday','Enter Workday tenant URL, API endpoint, and ISU credentials','Set worker sync interval (15–60 min) and punch sync (real-time to 5 min)']},
-    'Phase 6':{icon:'🖥️',label:'PHASE 6 — CLOCK REGISTRATION',steps:['Register each dormakaba terminal in B-COMM with its device ID and IP address','Set correct time zone and firmware version per device','Choose HTTPS or TCP/IP as communication protocol','Map Badge Number to Workday Worker ID (Employee_ID or Universal_ID) — this is critical']},
-    'Phase 7':{icon:'🗂️',label:'PHASE 7 — PUNCH TYPES & WORKTAGS',steps:['Map Clock In button → Workday Clock In event','Map Clock Out button → Workday Clock Out event','Map Break button → Workday Meal/Break event','Map Transfer button → Worktag Transfer event','Map cost centers, departments, and project codes as labor worktags']},
-    'Phase 8':{icon:'📐',label:'PHASE 8 — TIME TRACKING RULES',steps:['Create Time Entry Templates per worker group (manufacturing, office, salary)','Configure overtime rules, meal penalties, and shift differentials','Set grace periods and early clock-in restrictions','Enable meal enforcement and unauthorized overtime prevention in B-COMM']},
-    'Phase 9':{icon:'🧪',label:'PHASE 9 — END-TO-END TESTING',steps:['Test basic clock in → verify entry appears on Workday timesheet','Test break and meal start/end events','Test labor transfer with department change','Test offline recovery: disconnect network, punch clock, reconnect, confirm sync']},
-    'Phase 10':{icon:'🚀',label:'PHASE 10 — PRODUCTION CUTOVER',steps:['Move API credentials to production Workday tenant','Switch all endpoints from implementation to production','Repoint all dormakaba clocks to production B-COMM','Validate worker sync is working correctly','Monitor first full payroll cycle closely for any issues']},
-    'Troubleshooting':{icon:'🔧',label:'COMMON PROBLEMS & FIXES',steps:['Duplicate punches → enable transaction IDs and deduplication in B-COMM','Worker Not Found → verify Badge Number matches Workday Employee ID or Universal ID','Punch appears but no time block → check Time Entry Templates and calculation tags in Workday','Authentication errors → check ISU credentials and security domain permissions','Worker sync failures → check API endpoint, network routing, and B-COMM logs']}
+/* ══ PHASE CARDS ══ */
+function buildPhaseCard(lt){
+  const pm={
+    'Architecture overview':{icon:'🏗️',label:'SYSTEM ARCHITECTURE',steps:['Employee punches dormakaba terminal','B-COMM middleware captures and validates','Workday Web Services API receives data','Workday timesheet auto-updates in real time']},
+    'Phase 1 & 2':{icon:'⚙️',label:'PHASE 1 & 2 — WORKDAY PREP & SECURITY',steps:['Enable Time Tracking, Time Entry Templates, Time Clock Events in Workday','Configure worker profiles, pay groups, cost centers, worktags first','Create ISU_DORMAKABA with strong password','Set "Do Not Allow UI Sessions" on the ISU account']},
+    'Phase 3':{icon:'🔐',label:'PHASE 3 — INTEGRATION SYSTEM USER',steps:['Create Integration System Security Group (unconstrained type)','Add ISU_DORMAKABA to the security group','Grant read access: workers, organizations, worktags','Grant submit access to Time Tracking APIs and Time Clock Events','Activate Pending Security Policy Changes in Workday']},
+    'Phase 4':{icon:'🌐',label:'PHASE 4 — API & WEB SERVICES',steps:['Gather Workday tenant URL, tenant name, API version, credentials','Confirm Basic Authentication method for most dormakaba deployments','Test connectivity using Postman or SoapUI','Run a Get Workers API call to confirm data flows correctly','Verify Time Clock Event posting works in sandbox tenant']},
+    'Phase 5':{icon:'💻',label:'PHASE 5 — B-COMM INSTALLATION',steps:['Deploy on Windows Server with SQL database, or cloud-hosted','Ensure HTTPS access to Workday and a static IP','Configure tenant URL, API endpoint, and ISU credentials in B-COMM','Set worker sync: 15–60 min · punch sync: real-time to 5 min']},
+    'Phase 6':{icon:'🖥️',label:'PHASE 6 — CLOCK REGISTRATION',steps:['Register each clock: device ID, IP address, time zone, firmware','Set HTTPS or TCP/IP as communication protocol','Map Badge Number to Workday Worker ID — this step is critical','Use Employee_ID or Universal_ID for the badge mapping']},
+    'Phase 7':{icon:'🗂️',label:'PHASE 7 — PUNCH TYPES & WORKTAGS',steps:['Clock In button → Workday Clock In event','Clock Out button → Workday Clock Out event','Break button → Workday Meal/Break event','Transfer button → Worktag Transfer event','Map cost centers, departments, and project codes as labor worktags']},
+    'Phase 8':{icon:'📐',label:'PHASE 8 — TIME TRACKING RULES',steps:['Create Time Entry Templates per worker group (manufacturing, office, salary)','Configure overtime rules, meal penalties, shift differentials','Set grace periods and early clock-in restrictions','Enable meal enforcement and unauthorized overtime prevention in B-COMM']},
+    'Phase 9':{icon:'🧪',label:'PHASE 9 — END-TO-END TESTING',steps:['Test basic clock in → verify it appears on Workday timesheet','Test break and meal start/end events','Test labor transfer with department change','Offline recovery test: disconnect network, punch, reconnect, confirm sync']},
+    'Phase 10':{icon:'🚀',label:'PHASE 10 — PRODUCTION CUTOVER',steps:['Move API credentials to the production Workday tenant','Switch all endpoints from implementation to production','Repoint all dormakaba clocks to production B-COMM','Validate worker sync is running correctly','Monitor the first full payroll cycle closely']},
+    'Troubleshooting':{icon:'🔧',label:'COMMON PROBLEMS & FIXES',steps:['Duplicate punches → enable transaction IDs, deduplicate in B-COMM','Worker Not Found → verify Badge Number matches Workday Employee ID','No time block → check Time Entry Templates and calculation tags in Workday','Auth errors → check ISU credentials and security domain permissions','Sync failures → check API endpoint, network routing, and B-COMM logs']}
   };
-  for(const key in phaseMap){
-    if(lessonTitle.includes(key)){
-      const p=phaseMap[key];
-      const card=document.createElement('div');card.className='phase-card';
-      const hdr=document.createElement('div');hdr.className='phase-card-hdr';hdr.innerHTML=`<span>${p.icon}</span><span>${p.label}</span>`;
-      const steps=document.createElement('div');steps.className='phase-steps';
+  for(const key in pm){
+    if(lt.includes(key)){
+      const p=pm[key];
+      const card=document.createElement('div'); card.className='phase-card';
+      const hdr=document.createElement('div'); hdr.className='phase-card-hdr';
+      hdr.innerHTML=`<span>${p.icon}</span><span>${p.label}</span>`;
+      const steps=document.createElement('div'); steps.className='phase-steps';
       p.steps.forEach((s,i)=>{
-        const row=document.createElement('div');row.className='phase-step';
+        const row=document.createElement('div'); row.className='phase-step';
         row.innerHTML=`<span class="phase-step-num">${String(i+1).padStart(2,'0')}</span><span>${s}</span>`;
         steps.appendChild(row);
       });
-      card.appendChild(hdr);card.appendChild(steps);
+      card.appendChild(hdr); card.appendChild(steps);
       return card;
     }
   }
@@ -542,132 +649,192 @@ function buildPhaseCard(lessonTitle){
 /* ══ DATA GRIDS ══ */
 function buildDataGrid(lt){
   if(lt.includes('data B-COMM pulls')){
-    const g=document.createElement('div');g.className='data-grid';
-    [{t:'EMPLOYEE DATA',i:'Name · Badge number · Direct manager · Job profiles · Positions · Accrual balances · Time clock attributes'},{t:'ORGANIZATION DATA',i:'Cost centers · Custom organizations'},{t:'LABOR DATA',i:'Project numbers · Custom worktags'},{t:'PURPOSE',i:'Real-time validation · No duplicate entry · Accurate auto-fill of timesheets'}].forEach(s=>{const c=document.createElement('div');c.className='data-card';c.innerHTML=`<div class="data-card-title">${s.t}</div><div class="data-card-items">${s.i}</div>`;g.appendChild(c);});
+    const g=document.createElement('div'); g.className='data-grid';
+    [{t:'EMPLOYEE DATA',i:'Name · Badge number · Direct manager · Job profiles · Positions · Accrual balances · Time clock attributes'},
+     {t:'ORGANIZATION DATA',i:'Cost centers · Custom organizations'},
+     {t:'LABOR DATA',i:'Project numbers · Custom worktags'},
+     {t:'PURPOSE',i:'Real-time validation · No duplicate entry · Auto-fill timesheet'}
+    ].forEach(s=>{const c=document.createElement('div');c.className='data-card';c.innerHTML=`<div class="data-card-title">${s.t}</div><div class="data-card-items">${s.i}</div>`;g.appendChild(c);});
     return g;
   }
   if(lt.includes('transaction data B-COMM sends')){
-    const g=document.createElement('div');g.className='data-grid';
-    [{t:'TIME & ATTENDANCE',i:'Check-in · Time entry code · Time clock ID · Break · Meal · Check-out'},{t:'LABOR COLLECTION',i:'Job profile · Position · Cost center · Custom org · Custom worktag · Project number'},{t:'ABSENCE',i:'Time off requests submitted at the terminal'},{t:'RESULT',i:'Employee Workday timesheet auto-updated in real time'}].forEach(s=>{const c=document.createElement('div');c.className='data-card';c.innerHTML=`<div class="data-card-title">${s.t}</div><div class="data-card-items">${s.i}</div>`;g.appendChild(c);});
+    const g=document.createElement('div'); g.className='data-grid';
+    [{t:'TIME & ATTENDANCE',i:'Check-in · Time entry code · Time clock ID · Break · Meal · Check-out'},
+     {t:'LABOR COLLECTION',i:'Job profile · Position · Cost center · Custom org · Custom worktag · Project number'},
+     {t:'ABSENCE',i:'Time off requests submitted at the terminal'},
+     {t:'RESULT',i:'Workday timesheet auto-updated in real time'}
+    ].forEach(s=>{const c=document.createElement('div');c.className='data-card';c.innerHTML=`<div class="data-card-title">${s.t}</div><div class="data-card-items">${s.i}</div>`;g.appendChild(c);});
     return g;
   }
   if(lt.includes('punch types')){
     const wrap=document.createElement('div');
-    const t=document.createElement('table');t.className='punch-table';
-    t.innerHTML=`<thead><tr><th>CLOCK ACTION</th><th></th><th>WORKDAY EVENT</th></tr></thead><tbody>${[['IN','Clock In'],['OUT','Clock Out'],['BREAK','Meal / Break'],['TRANSFER','Worktag Transfer']].map(r=>`<tr><td>${r[0]}</td><td class="arrow">→</td><td>${r[1]}</td></tr>`).join('')}</tbody>`;
-    wrap.appendChild(t);return wrap;
+    const tbl=document.createElement('table'); tbl.className='punch-table';
+    tbl.innerHTML=`<thead><tr><th>CLOCK ACTION</th><th></th><th>WORKDAY EVENT</th></tr></thead><tbody>${[['IN','Clock In'],['OUT','Clock Out'],['BREAK','Meal / Break'],['TRANSFER','Worktag Transfer']].map(r=>`<tr><td>${r[0]}</td><td class="punch-arr">→</td><td>${r[1]}</td></tr>`).join('')}</tbody>`;
+    wrap.appendChild(tbl); return wrap;
   }
   return null;
 }
 
 /* ══ CHAT ══ */
-function fmt(t){return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/`(.*?)`/g,'<span class="term">$1</span>').replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');}
+function fmt(t){
+  return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/`(.*?)`/g,'<span class="term">$1</span>')
+    .replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
+}
 
-function addMsg(role,html,raw){
+function addMsg(role, html, raw){
   const chat=document.getElementById('chat');
   const type=curType();
   const w=document.createElement('div');
-  w.className='msg '+(role==='watt'?'watt':'user')+(role==='watt'&&type==='dk'?' dk-msg':'')+(role==='watt'&&type==='setup'?' setup-msg':'');
-  const av=document.createElement('div');av.className='mav '+(role==='watt'?'w':'u');av.textContent=role==='watt'?'W':'YOU';
-  const b=document.createElement('div');b.className='bubble';
+  w.className='msg '+(role==='watt'?'watt':'user')
+    +(role==='watt'&&type==='dk'?' dk-msg':'')
+    +(role==='watt'&&type==='setup'?' setup-msg':'');
+  const av=document.createElement('div');
+  av.className='mav '+(role==='watt'?'w':'u');
+  av.textContent=role==='watt'?'W':'YOU';
+  const b=document.createElement('div'); b.className='bubble';
   if(role==='watt'){
     if(type==='dk'){const badge=document.createElement('div');badge.className='mod-badge dk';badge.textContent='🔴 dormakaba 98 00 + B-COMM for Workday';b.appendChild(badge);}
     if(type==='setup'){const badge=document.createElement('div');badge.className='mod-badge setup';badge.textContent='🟣 Setup & Go-Live — Step-by-step implementation';b.appendChild(badge);}
   }
-  const content=document.createElement('div');content.innerHTML=html;b.appendChild(content);
+  const content=document.createElement('div'); content.innerHTML=html; b.appendChild(content);
   if(role==='watt'){
     const lt=curL().t;
-    const pc=buildPhaseCard(lt);if(pc)b.appendChild(pc);
-    const dg=buildDataGrid(lt);if(dg)b.appendChild(dg);
+    const pc=buildPhaseCard(lt); if(pc) b.appendChild(pc);
+    const dg=buildDataGrid(lt); if(dg) b.appendChild(dg);
   }
-  if(role==='watt'&&raw){const rb=document.createElement('button');rb.className='rbtn';rb.innerHTML='🔊 replay';rb.onclick=()=>speak(raw);b.appendChild(rb);}
-  w.appendChild(av);w.appendChild(b);chat.appendChild(w);chat.scrollTop=chat.scrollHeight;return w;
+  if(role==='watt'&&raw){
+    const rb=document.createElement('button'); rb.className='rbtn';
+    rb.innerHTML='🔊 replay'; rb.onclick=()=>speak(raw); b.appendChild(rb);
+  }
+  w.appendChild(av); w.appendChild(b);
+  chat.appendChild(w); chat.scrollTop=chat.scrollHeight;
+  return w;
 }
 
-function addTyping(){const c=document.getElementById('chat');const d=document.createElement('div');d.className='msg watt';d.id='ti';d.innerHTML='<div class="mav w">W</div><div class="bubble"><div class="typing-b"><span></span><span></span><span></span></div></div>';c.appendChild(d);c.scrollTop=c.scrollHeight;}
+function addTyping(){
+  const c=document.getElementById('chat');
+  const d=document.createElement('div'); d.className='msg watt'; d.id='ti';
+  d.innerHTML='<div class="mav w">W</div><div class="bubble"><div class="typing-b"><span></span><span></span><span></span></div></div>';
+  c.appendChild(d); c.scrollTop=c.scrollHeight;
+}
 function remTyping(){const t=document.getElementById('ti');if(t)t.remove();}
 
-/* ══ API ══ */
+/* ══ CLAUDE API CALL ══ */
 async function callClaude(prompt){
-  const l=curL(),type=curType();
-  const ctx=`[Lesson: Module ${modIdx+1} "${MODS[modIdx].title}" → "${l.t}". ${type==='dk'?'Use dormakaba 98 00 hardware specs and B-COMM for Workday integration knowledge from the official dormakaba product page.':''}${type==='setup'?'Use the step-by-step implementation guide knowledge covering all 10 phases, ISU setup, API configuration, clock registration, punch mapping, testing, and troubleshooting.':''} Teach it now in your warm casual California voice. Natural sentences only, no formatting symbols, under 90 words.]`;
+  const type=curType();
+  const ctx=`[Lesson: Module ${modIdx+1} "${MODS[modIdx].title}" -> "${curL().t}". ${type==='dk'?'Use dormakaba 98 00 hardware and B-COMM Workday knowledge.':''}${type==='setup'?'Use the 10-phase setup guide knowledge.':''} Teach in warm California voice. Natural sentences only, no symbols, under 90 words.]`;
   const msgs=[...hist,{role:'user',content:prompt+'\n\n'+ctx}];
-  const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,system:SYS,messages:msgs})});
-  if(!r.ok)throw new Error('API '+r.status);
-  const d=await r.json();return d.content[0].text;
+  const resp=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-allow-cors':'true'
+    },
+    body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:300,system:SYS,messages:msgs})
+  });
+  if(!resp.ok){
+    let msg='API error '+resp.status;
+    try{const d=await resp.json();msg=d.error?.message||msg;}catch(e){}
+    throw new Error(msg);
+  }
+  const data=await resp.json();
+  return data.content[0].text;
 }
 
-/* ══ SEND ══ */
+/* ══ SEND MESSAGE ══ */
 async function sendMsg(text){
-  if(loading||!text.trim())return;
-  loading=true;stopSpeak();
-  const isAuto=text==='__auto__';
-  const btn=document.getElementById('send-btn');btn.disabled=true;
+  if(loading||!text.trim()) return;
+  loading=true; stopSpeak();
+  const isAuto=(text==='__auto__');
+  const btn=document.getElementById('send-btn'); btn.disabled=true;
   if(!isAuto){addMsg('user',text.replace(/</g,'&lt;').replace(/>/g,'&gt;'));hist.push({role:'user',content:text});}
-  setBot('thinking');addTyping();
+  setBot('thinking'); addTyping();
   try{
     const p=isAuto?'Teach this lesson now in your warm conversational California voice. Natural flowing sentences only, no formatting symbols at all.':text;
     const reply=await callClaude(p);
-    remTyping();lastRaw=reply;
+    remTyping(); lastRaw=reply;
     addMsg('watt',fmt(reply),reply);
     setBot('speaking');
     speak(reply,()=>{done.add(modIdx+'-'+lesIdx);renderPills();updateFoot();});
     hist.push({role:'assistant',content:reply});
-    if(hist.length>20)hist=hist.slice(-14);
-  }catch(e){
-    remTyping();setBot('idle');
-    const err="Oh no, I lost my connection! Check your internet and try again.";
-    addMsg('watt',err,err);speak(err);
+    if(hist.length>20) hist=hist.slice(-14);
+  }catch(err){
+    remTyping(); setBot('idle');
+    const errMsg='Oops, something went wrong — '+err.message+'. Check your API key in settings or refresh the page.';
+    addMsg('watt',errMsg,errMsg);
+    speak('Oops, something went wrong. Try refreshing the page.');
   }
-  loading=false;btn.disabled=false;
-  const inp=document.getElementById('input');inp.value='';inp.style.height='36px';
+  loading=false; btn.disabled=false;
+  const inp=document.getElementById('input'); inp.value=''; inp.style.height='35px';
 }
 
-/* ══ NAV ══ */
+/* ══ NAVIGATION ══ */
 function startLesson(){hist=[];document.getElementById('chat').innerHTML='';renderPills();updateFoot();sendMsg('__auto__');}
 function nextLesson(){stopSpeak();const m=MODS[modIdx];if(lesIdx<m.lessons.length-1)lesIdx++;else if(modIdx<MODS.length-1){modIdx++;lesIdx=0;}startLesson();}
 function prevLesson(){stopSpeak();if(lesIdx>0)lesIdx--;else if(modIdx>0){modIdx--;lesIdx=MODS[modIdx].lessons.length-1;}startLesson();}
 
-/* ══ SPEECH REC ══ */
+/* ══ SPEECH RECOGNITION ══ */
 function initRec(){
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return null;
-  const r=new SR();r.lang='en-US';r.continuous=false;r.interimResults=true;
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition; if(!SR) return null;
+  const r=new SR(); r.lang='en-US'; r.continuous=false; r.interimResults=true;
   r.onstart=()=>{isRec=true;document.getElementById('mic-btn').classList.add('rec');document.getElementById('live-bar').style.display='block';document.getElementById('live-txt').textContent='Listening...';stopSpeak();};
   r.onresult=e=>{let f='',i='';for(let j=e.resultIndex;j<e.results.length;j++){if(e.results[j].isFinal)f+=e.results[j][0].transcript;else i+=e.results[j][0].transcript;}document.getElementById('live-txt').textContent=f||i||'Listening...';if(f)document.getElementById('input').value=f;};
   r.onend=()=>{isRec=false;document.getElementById('mic-btn').classList.remove('rec');document.getElementById('live-bar').style.display='none';const v=document.getElementById('input').value.trim();if(v)sendMsg(v);};
-  r.onerror=e=>{isRec=false;document.getElementById('mic-btn').classList.remove('rec');document.getElementById('live-bar').style.display='none';if(e.error!=='no-speech'&&e.error!=='aborted'){const m="Hmm I couldn't hear you! Make sure microphone access is allowed.";addMsg('watt',m,m);speak(m);}};
+  r.onerror=ev=>{isRec=false;document.getElementById('mic-btn').classList.remove('rec');document.getElementById('live-bar').style.display='none';if(ev.error!=='no-speech'&&ev.error!=='aborted'){const m="Hmm I couldn't hear you! Make sure microphone access is allowed.";addMsg('watt',m,m);speak(m);}};
   return r;
 }
 
-/* ══ SLIDERS ══ */
-document.getElementById('vol').oninput=function(){document.getElementById('vol-v').textContent=Math.round(this.value*100)+'%';};
-document.getElementById('spd').oninput=function(){document.getElementById('spd-v').textContent=parseFloat(this.value).toFixed(1)+'x';};
-document.getElementById('pitch').oninput=function(){document.getElementById('pitch-v').textContent=parseFloat(this.value).toFixed(1);};
+/* ══ WIRE UP EVENTS ══ */
+document.addEventListener('DOMContentLoaded',()=>{
 
-/* ══ EVENTS ══ */
-document.getElementById('send-btn').onclick=()=>{const v=document.getElementById('input').value.trim();if(v)sendMsg(v);};
-document.getElementById('input').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();const v=e.target.value.trim();if(v)sendMsg(v);}});
-document.getElementById('input').addEventListener('input',function(){this.style.height='36px';this.style.height=Math.min(this.scrollHeight,80)+'px';});
-document.getElementById('tts-btn').onclick=function(){ttsOn=!ttsOn;this.textContent=ttsOn?'🔊':'🔇';this.classList.toggle('on',ttsOn);if(!ttsOn)stopSpeak();};
-document.getElementById('stop-btn').onclick=stopSpeak;
-document.getElementById('replay-btn').onclick=()=>{if(lastRaw)speak(lastRaw);};
-document.getElementById('next-btn').onclick=nextLesson;
-document.getElementById('prev-btn').onclick=prevLesson;
-document.getElementById('quiz-btn').onclick=()=>sendMsg('Quiz me right now with one conversational multiple choice question about this topic.');
-document.getElementById('repeat-btn').onclick=()=>sendMsg('Explain this lesson again a different way please.');
-document.getElementById('mic-btn').onclick=()=>{
-  if(!recog)recog=initRec();
-  if(!recog){const m="Voice input needs Chrome or Edge!";addMsg('watt',m,m);speak(m);return;}
-  if(isRec)recog.stop();else{try{recog.start();}catch(e2){recog=initRec();try{recog.start();}catch(e3){}}}
-};
+  // Sliders
+  document.getElementById('vol').oninput=function(){document.getElementById('vol-v').textContent=Math.round(this.value*100)+'%';};
+  document.getElementById('spd').oninput=function(){document.getElementById('spd-v').textContent=parseFloat(this.value).toFixed(1)+'x';};
+  document.getElementById('pitch').oninput=function(){document.getElementById('pitch-v').textContent=parseFloat(this.value).toFixed(1);};
 
-/* ══ UNLOCK ══ */
-document.getElementById('unlock-btn').onclick=()=>{
-  document.getElementById('overlay').style.display='none';
-  const wu=new SpeechSynthesisUtterance(' ');wu.volume=0;synth.speak(wu);
-  pickVoice();setTimeout(()=>{pickVoice();startLesson();},500);
-};
-[100,500,1200].forEach(d=>setTimeout(pickVoice,d));
+  // Voice buttons
+  document.getElementById('tts-btn').onclick=function(){ttsOn=!ttsOn;this.textContent=ttsOn?'🔊':'🔇';this.classList.toggle('on',ttsOn);if(!ttsOn)stopSpeak();};
+  document.getElementById('stop-btn').onclick=stopSpeak;
+  document.getElementById('replay-btn').onclick=()=>{if(lastRaw)speak(lastRaw);};
+
+  // Nav
+  document.getElementById('next-btn').onclick=nextLesson;
+  document.getElementById('prev-btn').onclick=prevLesson;
+  document.getElementById('quiz-btn').onclick=()=>sendMsg('Quiz me right now with one conversational multiple choice question about this topic.');
+  document.getElementById('repeat-btn').onclick=()=>sendMsg('Explain this lesson again a different way please.');
+
+  // Chat input
+  document.getElementById('send-btn').onclick=()=>{const v=document.getElementById('input').value.trim();if(v)sendMsg(v);};
+  document.getElementById('input').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();const v=e.target.value.trim();if(v)sendMsg(v);}});
+  document.getElementById('input').addEventListener('input',function(){this.style.height='35px';this.style.height=Math.min(this.scrollHeight,80)+'px';});
+
+  // Mic
+  document.getElementById('mic-btn').onclick=()=>{
+    if(!recog) recog=initRec();
+    if(!recog){const m="Voice input needs Chrome or Edge!";addMsg('watt',m,m);speak(m);return;}
+    if(isRec) recog.stop();
+    else{try{recog.start();}catch(e2){recog=initRec();try{recog.start();}catch(e3){}}}
+  };
+
+  // Start button on welcome screen
+  document.getElementById('start-btn').onclick=()=>{
+    showScreen(null); // hide all overlays
+    ['screen-apikey','screen-welcome'].forEach(id=>{
+      const el=document.getElementById(id);if(el)el.style.display='none';
+    });
+    // Unlock audio
+    const wu=new SpeechSynthesisUtterance(' ');wu.volume=0;synth.speak(wu);
+    pickVoice();
+    setTimeout(()=>{pickVoice();startLesson();},400);
+  };
+
+  // Boot sequence
+  [100,500,1200].forEach(d=>setTimeout(pickVoice,d));
+  initKeyScreen();
+});
 </script>
 </body>
 </html>
