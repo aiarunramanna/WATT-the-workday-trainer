@@ -519,16 +519,17 @@ let ttsOn=true, lastRaw='', mTmr=null, isRec=false, recog=null;
 const synth=window.speechSynthesis;
 let voice=null;
 
-/* ══ START — called by welcome screen button ══ */
+/* ══ START — global so inline onclick can reach it ══ */
 function startWATT(){
-  document.getElementById('screen-apikey').style.display='none';
+  const s=document.getElementById('screen-apikey');
+  if(s) s.style.display='none';
   const wu=new SpeechSynthesisUtterance(' ');wu.volume=0;synth.speak(wu);
   pickVoice();
   setTimeout(()=>{pickVoice();startLesson();},400);
 }
 
 function initKeyScreen(){
-  // Nothing needed — proxy handles auth, no key screen required
+  // No-op — proxy handles auth
 }
 
 /* ══ VOICE PICKER ══ */
