@@ -570,7 +570,7 @@ function pickVoice(){
     if(/\b(daniel|david|alex|tom|james|fred|ralph|albert|bruce|lee|rishi|arthur|george|oliver|harry|aaron|ryan|mark|paul|eric)\b/i.test(n)) s-=40;
     return s;
   };
-  voice=[...all].sort((a,b)=>sc(b)-sc(a))[0]||null;
+ voice = all.sort((a,b)=>sc(b)-sc(a))[0] || null;
   if(voice){
     const nm=voice.name.replace(/(Microsoft|Google)/i,'').trim().split(' ').slice(0,3).join(' ');
     document.getElementById('vname').textContent='🎙 '+nm;
