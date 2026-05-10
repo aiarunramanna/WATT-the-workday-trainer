@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- WATT Voice Trainer | Version 2.5 | Updated: 2026-05-09 | Workday AI Training Tutor -->
+<!-- WATT Voice Trainer | Version 2.6 | Updated: 2026-05-09 | Workday AI Training Tutor -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -236,7 +236,7 @@ footer{padding:.45rem 0;border-top:1px solid var(--border);display:flex;align-it
   <div class="ocard" style="max-width:460px;">
     <div class="ri">🤖</div>
     <h2>Hi! I'm WATT!</h2>
-    <p style="font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);margin:-.25rem 0 .6rem;letter-spacing:.06em;">Workday AI Training Tutor &nbsp;·&nbsp; v2.5</p>
+    <p style="font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);margin:-.25rem 0 .6rem;letter-spacing:.06em;">Workday AI Training Tutor &nbsp;·&nbsp; v2.6</p>
     <p style="margin-bottom:.9rem;">8 modules · 79 lessons · voice-first. Paste your free Anthropic API key below to begin — saved in your browser, never shared.</p>
     <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);text-align:left;margin-bottom:5px;letter-spacing:.05em;">
       GET FREE KEY: console.anthropic.com → API Keys → Create Key
@@ -611,9 +611,11 @@ synth.onvoiceschanged=pickVoice;
 
 /* ══ SPEAK ══ */
 function cleanSpeech(t){
+  var bt=String.fromCharCode(96);
+  var btRe=new RegExp(bt+'(.*?)'+bt,'g');
   return t.replace(/<[^>]+>/g,' ')
     .replace(/\*\*(.*?)\*\*/g,'$1')
-    .replace(/`(.*?)`/g,'$1')
+    .replace(btRe,'$1')
     .replace(/[#_•*→←►◄↓\-]/g,' ')
     .replace(/\s+/g,' ').trim();
 }
@@ -822,8 +824,10 @@ function buildDataGrid(lt){
 
 /* ══ CHAT ══ */
 function fmt(t){
+  var bt=String.fromCharCode(96);
+  var btRe=new RegExp(bt+'(.*?)'+bt,'g');
   return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
-    .replace(/`(.*?)`/g,'<span class="term">$1</span>')
+    .replace(btRe,'<span class="term">$1</span>')
     .replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
 }
 
