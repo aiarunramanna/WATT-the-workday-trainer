@@ -419,12 +419,7 @@ const MODS=[
   ]}
 ];
 
-const SYS=`You are WATT, a super friendly upbeat 20-year-old from Southern California teaching Workday Time and Attendance and physical clock integration. Speak like a smart warm friend, never a textbook.
-
-CRITICAL — spoken aloud by text-to-speech:
-Only natural conversational sentences. Zero bullets. Zero dashes. Zero asterisks. Zero markdown. Zero symbols. Keep responses under 90 words. Use contractions and California casual: okay so, basically, so here is the deal, the cool thing is, totally, right, super easy, no worries. After teaching invite them to ask more or get quizzed. Never list with letters or numbers aloud.
-
-WORKDAY T&A: Cloud SaaS no on-premise. Exempt no overtime, non-exempt has overtime, hourly paid by hours logged. Integrates HCM Payroll Absence. Web or mobile entry with timestamps. Geofencing for field workers. Time Period Lockout deadline. Self-correct before submission, manager corrects after. Time off is short-term manager-approved. Leave of absence is long-term HR-approved. Over 30 days needs formal leave. Accruals carryover auto-approval tracked. Manager approves after submission only. Exception management flags anomalies. Auto overtime. Dashboard shows trends exceptions queues. Automated pay rules. API sync. Overtime reports. Global analytics.
+const SYS="You are WATT, a super friendly upbeat 20-year-old from Southern California teaching Workday Time and Attendance and physical clock integration. Speak like a smart warm friend, never a textbook.\n\nCRITICAL — spoken aloud by text-to-speech:\nOnly natural conversational sentences. Zero bullets. Zero dashes. Zero asterisks. Zero markdown. Zero symbols. Keep responses under 90 words. Use contractions and California casual: okay so, basically, so here is the deal, the cool thing is, totally, right, super easy, no worries. After teaching invite them to ask more or get quizzed. Never list with letters or numbers aloud.\n\nWORKDAY T&A: Cloud SaaS no on-premise. Exempt no overtime, non-exempt has overtime, hourly paid by hours logged. Integrates HCM Payroll Absence. Web or mobile entry with timestamps. Geofencing for field workers. Time Period Lockout deadline. Self-correct before submission, manager corrects after. Time off is short-term manager-approved. Leave of absence is long-term HR-approved. Over 30 days needs formal leave. Accruals carryover auto-approval tracked. Manager approves after submission only. Exception management flags anomalies. Auto overtime. Dashboard shows trends exceptions queues. Automated pay rules. API sync. Overtime reports. Global analytics.
 
 DORMAKABA 98 00: K7 generation premium model. 10.1 inch 1280 by 800 touchscreen scratch-resistant glass. i.MX8M mini quad-core 4GB RAM 16GB storage. dormakaba Android OS updateable. 1 watt speaker microphone text-to-speech. Identification via smartphone RFID LEGIC MIFARE or fingerprint biometrics. Fingerprint prevents buddy-punching. PoE IEEE 802.3at powered. Operates minus 5 to plus 45 Celsius 5 to 85 percent humidity. IP20 or IP65 rated. IK06 impact resistant. 266.5 by 266.2 by 65.6mm. 50000 records. Door access and CardLink optional. Variants 98 20 98 40 98 60. Family includes 96 00 and 97 00.
 
@@ -522,7 +517,7 @@ WBS 8.1 Optimization February 1 to 7 assigned to Payroll Lead and Integration Le
 
 WBS 8.2 Knowledge Transition February 8 to 14 assigned to Business Analyst: Transfer all system knowledge to the internal Workday team and IT team. Deliver a final knowledge transfer session covering B-COMM administration, Workday Time Tracking configuration maintenance, and dormakaba terminal management. Hand over all documentation: the configuration workbook, the support runbook, the integration design document, and the test results archive. Confirm the internal team can independently manage the system without vendor support.
 
-WBS 8.3 Project Closure February 15 to 21 assigned to PM and Vendor Team: Conduct the lessons learned session with all workstream leads. Document what went well, what was challenging, and what would be done differently. Compile the final project report covering scope delivered, budget variance, schedule performance, and quality metrics. Obtain formal project closure sign-off from the executive sponsor. Archive all project documentation. Release all project resources. Close all purchase orders and confirm final vendor invoices are paid.``;
+WBS 8.3 Project Closure February 15 to 21 assigned to PM and Vendor Team: Conduct the lessons learned session with all workstream leads. Document what went well, what was challenging, and what would be done differently. Compile the final project report covering scope delivered, budget variance, schedule performance, and quality metrics. Obtain formal project closure sign-off from the executive sponsor. Archive all project documentation. Release all project resources. Close all purchase orders and confirm final vendor invoices are paid.";
 
 /* ══ STATE ══ */
 let modIdx=0, lesIdx=0, loading=false, hist=[], done=new Set();
@@ -745,7 +740,7 @@ function buildPMCard(lt){
   if(!data) return null;
   const card=document.createElement('div');card.className='pm-card';
   const hdr=document.createElement('div');hdr.className='pm-card-hdr';
-  hdr.innerHTML=`<span>${data.icon}</span><span>WBS ${wbs} — ${l.phase} Phase</span>`;
+  hdr.innerHTML='<span>'+data.icon+'</span><span>WBS '+wbs+' \u2014 '+l.phase+' Phase</span>';
   const meta=document.createElement('div');meta.className='pm-card-meta';
   [{label:'Due',val:l.dates},{label:'Lead',val:l.who},{label:'Depends on',val:'Prev WBS'}].forEach(m=>{
     const chip=document.createElement('span');chip.className='pm-meta-chip';chip.textContent=m.label+': '+m.val;meta.appendChild(chip);
@@ -753,7 +748,7 @@ function buildPMCard(lt){
   const steps=document.createElement('div');steps.className='pm-steps';
   data.steps.forEach((s,i)=>{
     const row=document.createElement('div');row.className='pm-step';
-    row.innerHTML=`<span class="pm-step-num">${String(i+1).padStart(2,'0')}</span><span class="pm-step-role ${s.r}">${ROLE_LABELS[s.r]}</span><span>${s.t}</span>`;
+    row.innerHTML='<span class="pm-step-num">'+String(i+1).padStart(2,'0')+'</span><span class="pm-step-role '+s.r+'">'+ROLE_LABELS[s.r]+'</span><span>'+s.t+'</span>';
     steps.appendChild(row);
   });
   card.appendChild(hdr);card.appendChild(meta);card.appendChild(steps);
@@ -779,11 +774,11 @@ function buildPhaseCard(lt){
       const p=pm[key];
       const card=document.createElement('div'); card.className='phase-card';
       const hdr=document.createElement('div'); hdr.className='phase-card-hdr';
-      hdr.innerHTML=`<span>${p.icon}</span><span>${p.label}</span>`;
+      hdr.innerHTML='<span>'+p.icon+'</span><span>'+p.label+'</span>';
       const steps=document.createElement('div'); steps.className='phase-steps';
       p.steps.forEach((s,i)=>{
         const row=document.createElement('div'); row.className='phase-step';
-        row.innerHTML=`<span class="phase-step-num">${String(i+1).padStart(2,'0')}</span><span>${s}</span>`;
+        row.innerHTML='<span class="phase-step-num">'+String(i+1).padStart(2,'0')+'</span><span>'+s+'</span>';
         steps.appendChild(row);
       });
       card.appendChild(hdr); card.appendChild(steps);
@@ -801,7 +796,7 @@ function buildDataGrid(lt){
      {t:'ORGANIZATION DATA',i:'Cost centers · Custom organizations'},
      {t:'LABOR DATA',i:'Project numbers · Custom worktags'},
      {t:'PURPOSE',i:'Real-time validation · No duplicate entry · Auto-fill timesheet'}
-    ].forEach(s=>{const c=document.createElement('div');c.className='data-card';c.innerHTML=`<div class="data-card-title">${s.t}</div><div class="data-card-items">${s.i}</div>`;g.appendChild(c);});
+    ].forEach(s=>{const c=document.createElement('div');c.className='data-card';c.innerHTML='<div class="data-card-title">'+s.t+'</div><div class="data-card-items">'+s.i+'</div>';g.appendChild(c);});
     return g;
   }
   if(lt.includes('transaction data B-COMM sends')){
@@ -810,13 +805,13 @@ function buildDataGrid(lt){
      {t:'LABOR COLLECTION',i:'Job profile · Position · Cost center · Custom org · Custom worktag · Project number'},
      {t:'ABSENCE',i:'Time off requests submitted at the terminal'},
      {t:'RESULT',i:'Workday timesheet auto-updated in real time'}
-    ].forEach(s=>{const c=document.createElement('div');c.className='data-card';c.innerHTML=`<div class="data-card-title">${s.t}</div><div class="data-card-items">${s.i}</div>`;g.appendChild(c);});
+    ].forEach(s=>{const c=document.createElement('div');c.className='data-card';c.innerHTML='<div class="data-card-title">'+s.t+'</div><div class="data-card-items">'+s.i+'</div>';g.appendChild(c);});
     return g;
   }
   if(lt.includes('punch types')){
     const wrap=document.createElement('div');
     const tbl=document.createElement('table'); tbl.className='punch-table';
-    tbl.innerHTML=`<thead><tr><th>CLOCK ACTION</th><th></th><th>WORKDAY EVENT</th></tr></thead><tbody>${[['IN','Clock In'],['OUT','Clock Out'],['BREAK','Meal / Break'],['TRANSFER','Worktag Transfer']].map(r=>`<tr><td>${r[0]}</td><td class="punch-arr">→</td><td>${r[1]}</td></tr>`).join('')}</tbody>`;
+    tbl.innerHTML='<thead><tr><th>CLOCK ACTION</th><th></th><th>WORKDAY EVENT</th></tr></thead><tbody>'+[['IN','Clock In'],['OUT','Clock Out'],['BREAK','Meal / Break'],['TRANSFER','Worktag Transfer']].map(r=>'<tr><td>'+r[0]+'</td><td class="punch-arr">\u2192</td><td>'+r[1]+'</td></tr>').join('')+'</tbody>';
     wrap.appendChild(tbl); return wrap;
   }
   return null;
@@ -887,7 +882,10 @@ async function callClaude(prompt){
   const key=getSavedKey();
   if(!key) throw new Error('No API key — please refresh the page and enter your sk-ant- key');
   const type=curType();
-  const ctx=`[Lesson: Module ${modIdx+1} "${MODS[modIdx].title}" -> "${curL().t}". ${type==='dk'?'Use dormakaba 98 00 hardware and B-COMM Workday knowledge.':''}${type==='setup'?'Use the 10-phase setup guide knowledge.':''}${type==='pm'?'Use the PM implementation guide knowledge for WBS '+curL().wbs+' in the '+curL().phase+' phase. Assigned to: '+curL().who+'. Dates: '+curL().dates+'. Be practical and detailed.':''} Teach in warm California voice. Natural sentences only, no symbols, under 90 words.]`;
+  var dkNote=type==='dk'?'Use dormakaba 98 00 hardware and B-COMM Workday knowledge.':'';
+  var setupNote=type==='setup'?'Use the 10-phase setup guide knowledge.':'';
+  var pmNote=type==='pm'?'Use the PM implementation guide knowledge for WBS '+curL().wbs+' in the '+curL().phase+' phase. Assigned to: '+curL().who+'. Dates: '+curL().dates+'. Be practical and detailed.':'';
+  var ctx='[Lesson: Module '+(modIdx+1)+' "'+MODS[modIdx].title+'" -> "'+curL().t+'". '+dkNote+setupNote+pmNote+' Teach in warm California voice. Natural sentences only, no symbols, under 90 words.]';
   const msgs=[...hist,{role:'user',content:prompt+'\n\n'+ctx}];
   const resp=await fetch('https://api.anthropic.com/v1/messages',{
     method:'POST',
