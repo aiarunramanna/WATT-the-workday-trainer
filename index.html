@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- WATT Voice Trainer | Version 2.3 | Updated: 2026-05-09 | Workday AI Training Tutor -->
+<!-- WATT Voice Trainer | Version 2.4 | Updated: 2026-05-09 | Workday AI Training Tutor -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -240,7 +240,7 @@ footer{padding:.45rem 0;border-top:1px solid var(--border);display:flex;align-it
       Workday AI Training Tutor
     </p>
     <div style="display:inline-block;font-family:'Space Mono',monospace;font-size:9px;padding:2px 10px;border-radius:99px;border:1px solid var(--border);color:var(--muted);margin-bottom:.75rem;">
-      v2.3 · 2026-05-09
+      v2.4 · 2026-05-09
     </div>
     <p>Your Workday T&A voice tutor — <strong>8 modules &amp; 79 lessons</strong> including a full dormakaba B-COMM integration module, step-by-step setup guide, and a complete <strong>Project Manager Implementation Guide</strong>.</p>
     <div class="mod-grid">
@@ -251,7 +251,7 @@ footer{padding:.45rem 0;border-top:1px solid var(--border);display:flex;align-it
       <div class="mc" style="border-color:rgba(245,158,11,.4);color:#f59e0b;">🟡 PM Guide</div>
     </div>
     <button class="obtn" id="start-btn" onclick="this.textContent='Starting...';this.disabled=true;startWATT();">🔊 Start My Voice Lesson</button>
-    <div class="vhint">8 modules · 79 lessons · voice-first · no login needed</div>
+    <div class="vhint">8 modules · 79 lessons · voice-first · one-time API key setup</div>
   </div>
 </div>
 
@@ -570,7 +570,7 @@ function pickVoice(){
     if(/\b(daniel|david|alex|tom|james|fred|ralph|albert|bruce|lee|rishi|arthur|george|oliver|harry|aaron|ryan|mark|paul|eric)\b/i.test(n)) s-=40;
     return s;
   };
- voice = all.sort((a,b)=>sc(b)-sc(a))[0] || null;
+  voice=[...all].sort((a,b)=>sc(b)-sc(a))[0]||null;
   if(voice){
     const nm=voice.name.replace(/(Microsoft|Google)/i,'').trim().split(' ').slice(0,3).join(' ');
     document.getElementById('vname').textContent='🎙 '+nm;
@@ -844,19 +844,39 @@ function addTyping(){
 function remTyping(){const t=document.getElementById('ti');if(t)t.remove();}
 
 /* ══ CLAUDE API CALL ══ */
-const PROXY='https://watt-proxy.arun-ramanna.workers.dev';
+/* ══ API KEY — stored in localStorage, entered once ══ */
+const KEY_STORE='watt_key_v2';
+function getSavedKey(){try{return localStorage.getItem(KEY_STORE)||'';}catch(e){return '';}}
+function saveKey(k){try{localStorage.setItem(KEY_STORE,k);}catch(e){}}
 
+/* ══ CALL CLAUDE — direct browser API call ══ */
 async function callClaude(prompt){
+  let key=getSavedKey();
+  if(!key){
+    key=prompt('Please paste your Anthropic API key (sk-ant-...):\nGet one free at console.anthropic.com');
+    if(!key||!key.startsWith('sk-ant-')) throw new Error('No valid API key entered');
+    saveKey(key.trim());
+  }
   const type=curType();
-  const ctx=`[Lesson: Module ${modIdx+1} "${MODS[modIdx].title}" -> "${curL().t}". ${type==='dk'?'Use dormakaba 98 00 hardware and B-COMM Workday knowledge.':''}${type==='setup'?'Use the 10-phase setup guide knowledge.':''}${type==='pm'?'Use the PM implementation guide knowledge for WBS '+curL().wbs+' in the '+curL().phase+' phase. Assigned to: '+curL().who+'. Dates: '+curL().dates+'. Focus on what each role must specifically do. Be practical and detailed.':''} Teach in warm California voice. Natural sentences only, no symbols, under 90 words.]`;
+  const ctx=`[Lesson: Module ${modIdx+1} "${MODS[modIdx].title}" -> "${curL().t}". ${type==='dk'?'Use dormakaba 98 00 hardware and B-COMM Workday knowledge.':''}${type==='setup'?'Use the 10-phase setup guide knowledge.':''}${type==='pm'?'Use the PM implementation guide knowledge for WBS '+curL().wbs+' in the '+curL().phase+' phase. Assigned to: '+curL().who+'. Dates: '+curL().dates+'. Be practical and detailed.':''} Teach in warm California voice. Natural sentences only, no symbols, under 90 words.]`;
   const msgs=[...hist,{role:'user',content:prompt+'\n\n'+ctx}];
-  const resp=await fetch(PROXY,{
+  const resp=await fetch('https://api.anthropic.com/v1/messages',{
     method:'POST',
-    headers:{'Content-Type':'application/json'},
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key':key.trim(),
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-allow-cors':'true'
+    },
     body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:300,system:SYS,messages:msgs})
   });
+  if(resp.status===401){
+    // Bad key — clear it and ask again next time
+    try{localStorage.removeItem(KEY_STORE);}catch(e){}
+    throw new Error('Invalid API key — please refresh and enter a valid sk-ant- key');
+  }
   if(!resp.ok){
-    let msg='Error '+resp.status+' — check that your Cloudflare Worker is running at '+PROXY;
+    let msg='API error '+resp.status;
     try{const d=await resp.json();msg=d.error?.message||msg;}catch(e){}
     throw new Error(msg);
   }
@@ -934,22 +954,4 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('repeat-btn').onclick=()=>sendMsg('Explain this lesson again a different way please.');
 
   // Chat input
-  document.getElementById('send-btn').onclick=()=>{const v=document.getElementById('input').value.trim();if(v)sendMsg(v);};
-  document.getElementById('input').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();const v=e.target.value.trim();if(v)sendMsg(v);}});
-  document.getElementById('input').addEventListener('input',function(){this.style.height='35px';this.style.height=Math.min(this.scrollHeight,80)+'px';});
-
-  // Mic
-  document.getElementById('mic-btn').onclick=()=>{
-    if(!recog) recog=initRec();
-    if(!recog){const m="Voice input needs Chrome or Edge!";addMsg('watt',m,m);speak(m);return;}
-    if(isRec) recog.stop();
-    else{try{recog.start();}catch(e2){recog=initRec();try{recog.start();}catch(e3){}}}
-  };
-
-  // Boot
-  [100,500,1200].forEach(d=>setTimeout(pickVoice,d));
-  initKeyScreen();
-});
-</script>
-</body>
-</html>
+  document.getElementById('send-btn').onclick=()=>{const v=document.getEleme
